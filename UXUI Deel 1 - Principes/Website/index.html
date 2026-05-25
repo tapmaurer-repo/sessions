@@ -1,0 +1,1544 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UX/UI voor complexe applicaties — Kennissessie · Aiden</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- =============================================================================
+     Reusable inline SVG symbols — Bauhaus glyphs + a magenta hand-drawn arrow
+     ============================================================================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- the Aiden A mark, with a magenta dot inside the triangle -->
+    <symbol id="g-aiden" viewBox="0 0 60 64">
+      <path d="M38.15 40.18c0-4.5-3.65-8.15-8.15-8.15s-8.15 3.65-8.15 8.15 3.65 8.15 8.15 8.15 8.15-3.65 8.15-8.15Z" fill="#ff1fba"/>
+      <path d="M20.86 0 .14 63.18 0 63.61h9.68L30 1.64l20.25 61.74.07.23H60L39.14 0H20.86Z" fill="#ffffff"/>
+    </symbol>
+
+    <!-- 6-square tile (opdrachtgever) -->
+    <symbol id="g-tiles" viewBox="0 0 40 40">
+      <rect x="2"  y="2"  width="10" height="10" fill="currentColor"/>
+      <rect x="14" y="2"  width="10" height="10" fill="currentColor" opacity=".55"/>
+      <rect x="26" y="2"  width="10" height="10" fill="currentColor"/>
+      <rect x="2"  y="14" width="10" height="10" fill="currentColor" opacity=".55"/>
+      <rect x="14" y="14" width="10" height="10" fill="currentColor"/>
+      <rect x="26" y="14" width="10" height="10" fill="currentColor" opacity=".55"/>
+    </symbol>
+
+    <!-- 4-petal flower of circles (stakeholder) -->
+    <symbol id="g-flower" viewBox="0 0 40 40">
+      <circle cx="20" cy="10" r="7" fill="currentColor"/>
+      <circle cx="30" cy="20" r="7" fill="currentColor"/>
+      <circle cx="20" cy="30" r="7" fill="currentColor"/>
+      <circle cx="10" cy="20" r="7" fill="currentColor"/>
+      <circle cx="20" cy="20" r="5" fill="#000"/>
+    </symbol>
+
+    <!-- X / cross (eindgebruiker) -->
+    <symbol id="g-cross" viewBox="0 0 40 40">
+      <path d="M5 5 L15 15 L5 25 L15 35 L25 25 L35 35 L25 15 L35 5 L25 15 L15 5 Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- 3-dot scatter (proximity) -->
+    <symbol id="g-prox" viewBox="0 0 60 30">
+      <circle cx="8"  cy="15" r="4" fill="currentColor"/>
+      <circle cx="20" cy="15" r="4" fill="currentColor"/>
+      <circle cx="32" cy="15" r="4" fill="currentColor"/>
+      <circle cx="52" cy="15" r="4" fill="currentColor" opacity=".4"/>
+    </symbol>
+
+    <!-- 6-shape similarity -->
+    <symbol id="g-sim" viewBox="0 0 60 30">
+      <circle cx="6"  cy="15" r="4" fill="currentColor"/>
+      <rect   x="14" y="11" width="8" height="8" fill="currentColor"/>
+      <circle cx="30" cy="15" r="4" fill="currentColor"/>
+      <rect   x="38" y="11" width="8" height="8" fill="currentColor"/>
+      <circle cx="54" cy="15" r="4" fill="currentColor"/>
+    </symbol>
+
+    <!-- common region (grouped boxes) -->
+    <symbol id="g-region" viewBox="0 0 60 30">
+      <rect x="2"  y="6"  width="22" height="18" fill="none" stroke="currentColor" stroke-width="1.5" rx="3"/>
+      <rect x="32" y="6"  width="22" height="18" fill="none" stroke="currentColor" stroke-width="1.5" rx="3"/>
+      <circle cx="9"  cy="15" r="3" fill="currentColor"/>
+      <circle cx="17" cy="15" r="3" fill="currentColor"/>
+      <circle cx="39" cy="15" r="3" fill="currentColor"/>
+      <circle cx="47" cy="15" r="3" fill="currentColor"/>
+    </symbol>
+
+    <!-- closure (open shapes) -->
+    <symbol id="g-closure" viewBox="0 0 60 30">
+      <path d="M8 4 A11 11 0 1 1 8 26"  fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M28 4 L40 4 M40 4 L40 26 M40 26 L28 26" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M48 4 L56 15 L48 26" fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+
+    <!-- sparkle / star -->
+    <symbol id="g-star" viewBox="0 0 40 40">
+      <path d="M20 4 L23 17 L36 20 L23 23 L20 36 L17 23 L4 20 L17 17 Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- hand-drawn magenta arrow, curving down -->
+    <symbol id="g-arrow" viewBox="0 0 120 80">
+      <path d="M10 8 C 60 8, 100 30, 100 64" fill="none" stroke="#ff1fba" stroke-width="2" stroke-linecap="round"/>
+      <path d="M92 56 L100 64 L108 54" fill="none" stroke="#ff1fba" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- mini window frame (used in role cards) -->
+    <symbol id="g-window" viewBox="0 0 92 60">
+      <rect x="1" y="1" width="90" height="58" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
+      <line x1="1" y1="12" x2="91" y2="12" stroke="currentColor" stroke-width="1"/>
+      <circle cx="6" cy="6.5" r="1.4" fill="currentColor"/>
+      <circle cx="11" cy="6.5" r="1.4" fill="currentColor"/>
+      <circle cx="16" cy="6.5" r="1.4" fill="currentColor"/>
+      <rect x="10" y="22" width="22" height="3" fill="currentColor" opacity=".6"/>
+      <rect x="10" y="30" width="38" height="3" fill="currentColor" opacity=".4"/>
+      <rect x="10" y="38" width="30" height="3" fill="currentColor" opacity=".4"/>
+      <rect x="10" y="46" width="14" height="6" fill="currentColor" opacity=".7"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+<div class="shell">
+
+<!-- ============================== LEFT RAIL ============================== -->
+<nav class="rail" aria-label="Inhoudsopgave">
+  <div class="rail-brand">
+    <div class="lockup">
+      <svg class="mark" aria-hidden="true" viewBox="0 0 60 64"><use href="#g-aiden"/></svg>
+      <span class="tag">Tech<span class="dot">.</span> Made<span class="dot">.</span> Human<span class="dot">.</span></span>
+    </div>
+    <div class="meta">LJVBW · TM · v0.1</div>
+  </div>
+
+  <div class="rail-section">Cover</div>
+  <a class="rail-item" href="#cover"><span class="ix">00</span><span>Kennissessie</span></a>
+
+  <div class="rail-section">Agenda</div>
+  <a class="rail-item" href="#ch1"><span class="ix">001</span><span>Een Introductie</span></a>
+  <a class="rail-item" href="#ch2"><span class="ix">002</span><span>De Ervaring</span></a>
+  <a class="rail-item" href="#ch3"><span class="ix">003</span><span>De Vorm</span></a>
+  <a class="rail-item" href="#ch4"><span class="ix">004</span><span>De Gebruiker</span></a>
+  <a class="rail-item" href="#ch5"><span class="ix">005</span><span>Ons Brein</span></a>
+  <a class="rail-item" href="#ch6"><span class="ix">006</span><span>De Toekomst</span></a>
+
+  <div class="rail-section">Slot</div>
+  <a class="rail-item" href="#next"><span class="ix">08</span><span>Volgende sessies</span></a>
+  <a class="rail-item" href="#contact"><span class="ix">09</span><span>Sprekers · Bronnen</span></a>
+
+  <div class="rail-foot">
+    <div class="name">Kennissessie 1 / 3</div>
+    <div>26.MEI.20.26</div>
+    <div>LJVBW · TM · AIDEN</div>
+  </div>
+</nav>
+
+<!-- ============================== MAIN =================================== -->
+<main>
+
+<!-- ============================== COVER ================================== -->
+<section id="cover" class="cover" data-screen-label="00 Cover">
+  <div class="topline">
+    <div class="left">
+      <svg class="mark" aria-hidden="true" viewBox="0 0 60 64"><use href="#g-aiden"/></svg>
+      <span>Tech Made Human<span class="dot">.</span></span>
+    </div>
+    <div class="right">
+      <span>Kennissessie · 1 / 3</span>
+      <span class="ln2">26.MEI.20.26 · LJVBW · TM · AIDEN</span>
+    </div>
+  </div>
+
+  <div class="cover-grid">
+    <div>
+      <h1>
+        <span class="stack">UX/UI voor</span>
+        <span class="stack">complexe</span>
+        <span class="stack">applicaties<span class="dot">.</span></span>
+      </h1>
+      <div class="sub">Kennissessie<span class="dot">.</span> &nbsp;·&nbsp; De Principes<span class="dot">.</span></div>
+    </div>
+
+    <!-- Bauhaus geometric column — recreated from the deck cover -->
+    <div class="bauhaus" aria-hidden="true">
+      <svg viewBox="0 0 300 900" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style="display:block">
+        <!-- pink field -->
+        <rect width="300" height="900" fill="#ffd0d0"/>
+
+        <!-- Motif A — large dome at top (half ellipse, curve up) -->
+        <path d="M -10 260 A 170 260 0 0 1 310 260 Z" fill="#ff00cc"/>
+
+        <!-- Motif B — X-cross of four corner quarter circles + small downward wedge -->
+        <!-- top-left quarter (centre at 0,260) -->
+        <path d="M 0 260 L 150 260 A 150 150 0 0 1 0 410 Z" fill="#ff00cc"/>
+        <!-- top-right quarter -->
+        <path d="M 300 260 L 150 260 A 150 150 0 0 0 300 410 Z" fill="#ff00cc"/>
+        <!-- bottom-left quarter (centre at 0, 560) -->
+        <path d="M 0 560 L 0 410 A 150 150 0 0 0 150 560 Z" fill="#ff00cc"/>
+        <!-- bottom-right quarter -->
+        <path d="M 300 560 L 300 410 A 150 150 0 0 1 150 560 Z" fill="#ff00cc"/>
+        <!-- Motif C — tulip / two petals meeting in the centre -->
+        <!-- left petal: point at top, wide rounded bottom -->
+        <path d="M 150 560
+                 C 60 560, 0 640, 0 760
+                 C 0 870, 80 900, 150 900 Z" fill="#ff00cc"/>
+        <!-- right petal mirror -->
+        <path d="M 150 560
+                 C 240 560, 300 640, 300 760
+                 C 300 870, 220 900, 150 900 Z" fill="#ff00cc"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== INTRO / DRIE SESSIES ==================== -->
+<section class="block" id="three">
+  <div class="block-head">
+    <div class="left"><h3>Drie sessies, één verhaal<span class="dot">.</span></h3></div>
+    <div class="right">SERIE · 3 DELEN</div>
+  </div>
+  <p class="block-lede">De kennissessie is opgebouwd uit drie delen — principes, praktijk, pro. Vandaag deel één: de fundering waar de andere twee op staan.</p>
+
+  <div class="grid cols-3">
+    <div class="card accent">
+      <div class="tag-row"><span class="lhs">01 · NU</span><span>Vandaag</span></div>
+      <h4>De Principes<span class="dot">.</span></h4>
+      <p class="body-copy">Wat is UX/UI, hoe pas je het goed toe en hoe reageert het brein.</p>
+    </div>
+    <div class="card">
+      <div class="tag-row"><span class="lhs">02</span><span>Sessie 2</span></div>
+      <h4>De Praktijk<span class="dot">.</span></h4>
+      <p class="body-copy">Hoe implementeer je goede UX/UI in Mendix. Hoe ontstaat een symbiose met de Atlas Core.</p>
+    </div>
+    <div class="card">
+      <div class="tag-row"><span class="lhs">03</span><span>Sessie 3</span></div>
+      <h4>De Pro<span class="dot">.</span></h4>
+      <p class="body-copy">Custom UI Module, SCSS architectuur, custom design properties, design tokens.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== CHAPTER DIVIDER — UX/UI ================== -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 001</span>
+  <h2>UX / UI<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 1 — INTRODUCTIE ====================== -->
+<section class="chapter" id="ch1" data-screen-label="01 Een Introductie">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">Een Introductie</span>
+      <h2>De Vorm · De Ervaring<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <!-- Vorm / Ervaring split -->
+  <div class="block" id="vorm-ervaring">
+    <div class="block-head">
+      <div class="left"><h3>Wat is het verschil?</h3></div>
+      <div class="right">VORM · ERVARING</div>
+    </div>
+    <p class="block-lede">UX en UI worden vaak door elkaar gebruikt. Ze raken elkaar, maar het zijn twee disciplines.</p>
+
+    <div class="compare">
+      <div class="col">
+        <div class="lab-row">
+          <span class="chip yellow"><span class="d"></span>DE ERVARING</span>
+        </div>
+        <div class="lead">Hoe het werkt<span class="dot">.</span></div>
+        <ul>
+          <li>Structuur, flow, beslissingen.</li>
+          <li>"Kan ik mijn taak afmaken?"</li>
+          <li>Onderzoek, IA, journeys.</li>
+          <li>Onzichtbaar als ‘t goed is.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="lab-row">
+          <span class="chip magenta"><span class="d"></span>DE VORM</span>
+        </div>
+        <div class="lead">Hoe het overkomt<span class="dot">.</span></div>
+        <ul>
+          <li>Vorm, kleur, ritme.</li>
+          <li>"Voelt het kloppend?"</li>
+          <li>Visual design, vakmanschap.</li>
+          <li>Zichtbaar, altijd.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-up-headline">
+      <div class="h-pair">
+        <div class="a">Goede UI op<br/>slechte UX<span class="dot">.</span></div>
+        <div class="b">Mooi, maar<br/>onbruikbaar<span class="dot" style="color:#fff">.</span></div>
+      </div>
+      <div class="h-pair">
+        <div class="a">Goede UX op<br/>slechte UI<span class="dot">.</span></div>
+        <div class="b">Werkt, maar<br/>wekt geen<br/>vertrouwen<span class="dot" style="color:#fff">.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business case -->
+  <div class="block" id="business-case">
+    <div class="block-head">
+      <div class="left"><h3>De business-case<span class="dot">.</span></h3></div>
+      <div class="right">MAAK HET GESPREK MAKKELIJKER</div>
+    </div>
+    <p class="block-lede">Drie cijfers die je in een meeting kunt droppen wanneer iemand "design is leuk maar duur" zegt.</p>
+
+    <div class="grid cols-3">
+      <div class="stat">
+        <div class="num-big">€100<span class="dot">.</span><span class="small">/ €1</span></div>
+        <div class="lab">ROI op UX-investering.</div>
+        <p class="body-copy">Voor elke euro geïnvesteerd in UX, komt 100 euro terug.</p>
+        <div class="src">— FORRESTER</div>
+      </div>
+      <div class="stat">
+        <div class="num-big">+50%<span class="dot">.</span></div>
+        <div class="lab">Productiviteit.</div>
+        <p class="body-copy">Bij mensen die de hele dag in jouw geoptimaliseerde app werken.</p>
+        <div class="src">— NIELSEN NORMAN GROUP</div>
+      </div>
+      <div class="stat">
+        <div class="num-big">2×<span class="dot">.</span></div>
+        <div class="lab">Rendement.</div>
+        <p class="body-copy">Design-gedreven bedrijven verdubbelden hun aandeelhouderswaarde.</p>
+        <div class="src">— MCKINSEY · DESIGN VALUE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden cost -->
+  <div class="block" id="hidden-cost">
+    <div class="block-head">
+      <div class="left"><h3>Wat slechte UX kost<span class="dot">.</span></h3></div>
+      <div class="right">DE VERBORGEN KOSTEN</div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card has-glyph">
+        <div class="tag-row"><span class="lhs">01</span><span>SUPPORT</span></div>
+        <svg class="glyph" style="color: var(--yellow)" viewBox="0 0 40 40"><use href="#g-tiles"/></svg>
+        <h4>Support-tickets.</h4>
+        <p class="body-copy">Slecht ontworpen schermen genereren 3–5× meer support-vragen dan goed ontworpen schermen.</p>
+      </div>
+      <div class="card has-glyph">
+        <div class="tag-row"><span class="lhs">02</span><span>ONBOARDING</span></div>
+        <svg class="glyph" style="color: var(--peach)" viewBox="0 0 40 40"><use href="#g-flower"/></svg>
+        <h4>Trainings-uren.</h4>
+        <p class="body-copy">Onintuïtieve apps vereisen documentatie, sessies, on-boarding. Hoe meer training nodig, hoe slechter het ontwerp.</p>
+      </div>
+      <div class="card has-glyph">
+        <div class="tag-row"><span class="lhs">03</span><span>PEOPLE</span></div>
+        <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 40 40"><use href="#g-cross"/></svg>
+        <h4>Moraal.</h4>
+        <p class="body-copy">Frustrerende tools, gefrustreerde werknemers. Reduceer frictie, verbeter hun werkdagen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemiddelde gebruiker -->
+  <div class="block" id="users-time">
+    <div class="block-head">
+      <div class="left"><h3>Onze gebruikers zijn niet de gemiddelde gebruiker<span class="dot">.</span></h3></div>
+      <div class="right">DUUR PER DAG</div>
+    </div>
+    <p class="block-lede">Een consumenten-app wordt minuten per dag gebruikt. Een enterprise-app uren per dag. Dat schaalt alles op.</p>
+
+    <div class="users-strip">
+      <div class="user-row">
+        <span class="lab">Gemiddelde gebruiker</span>
+        <span class="pill"><span class="d"></span>30 min — 1 u</span>
+      </div>
+      <div></div>
+      <div></div>
+      <div class="user-row is-us">
+        <span class="lab">Onze gebruikers</span>
+        <span class="pill"><span class="d"></span>6 — 8 u</span>
+      </div>
+
+      <svg class="arrow-magenta" viewBox="0 0 120 80" width="120" height="80" style="right: 36%; top: 50%; transform: translate(50%, -50%)">
+        <use href="#g-arrow"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- WCAG huge pills -->
+  <div class="block" id="wcag">
+    <div class="block-head">
+      <div class="left"><h3>Toegankelijkheid<span class="dot">.</span></h3></div>
+      <div class="right">WCAG · 4 PRINCIPES</div>
+    </div>
+    <p class="block-lede">WCAG hangt aan vier ankers — P · O · U · R.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="wcag-row">
+        <span class="huge-pill yellow">Perceivable</span>
+        <span class="blurb">Contrast, alt-tekst, captions. Iedereen moet de inhoud kunnen ontvangen.</span>
+      </div>
+      <div class="wcag-row">
+        <span class="huge-pill peach">Operable</span>
+        <span class="blurb">Tab-index, sneltoetsen, focus. Niet alles is een muis.</span>
+      </div>
+      <div class="wcag-row">
+        <span class="huge-pill magenta">Understandable</span>
+        <span class="blurb">Heldere errors, voorspelbaar gedrag. Geen verrassingen.</span>
+      </div>
+      <div class="wcag-row">
+        <span class="huge-pill cream">Robust</span>
+        <span class="blurb">Assistive tech, semantische HTML, ARIA. Werkt vandaag én op de tools van morgen.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curb cut -->
+  <div class="block" id="curb-cut">
+    <div class="block-head">
+      <div class="left"><h3>Curb-cut effect<span class="dot">.</span></h3></div>
+      <div class="right">BEDACHT VOOR SOMMIGE · GEBRUIKT DOOR IEDEREEN</div>
+    </div>
+    <p class="block-lede">Toegankelijkheid is geen "extra’s voor de minderheid". Het is een feature voor iedereen — alleen ontworpen door de gevoeligste gebruikers eerst.</p>
+
+    <div class="curb">
+      <div class="row">
+        <div class="head">
+          <span class="name">Ondertiteling</span>
+          <span class="chip dot-yellow"><span class="d"></span>DOVEN · SLECHTHORENDE</span>
+          <span class="chip cream">SOUND OFF</span>
+        </div>
+        <p>In de trein, op kantoor, vertalingen.</p>
+      </div>
+      <div class="row">
+        <div class="head">
+          <span class="name">Toetsenbord-nav</span>
+          <span class="chip dot-peach"><span class="d"></span>MOTORISCH BEPERKT</span>
+          <span class="chip cream">MOUSE OFF</span>
+        </div>
+        <p>Power-users die sneller willen werken dan met een muis.</p>
+      </div>
+      <div class="row">
+        <div class="head">
+          <span class="name">Hoog contrast</span>
+          <span class="chip dot-magenta"><span class="d"></span>SLECHTZIENDEN</span>
+          <span class="chip cream">COLORBLIND · LOW-VISION</span>
+        </div>
+        <p>Schermen in fel zonlicht, lage batterij, of een lichte ruimte.</p>
+      </div>
+      <div class="row">
+        <div class="head">
+          <span class="name">Voorleesfunctie</span>
+          <span class="chip dot-violet"><span class="d"></span>SLECHTZIENDEN</span>
+          <span class="chip cream">SCREENREADER</span>
+        </div>
+        <p>Gebruikers tijdens activiteiten — koken, hardlopen, autorijden.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ============================== DIVIDER · DE ERVARING ==================== -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 002</span>
+  <h2>De Ervaring<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 2 — DE ERVARING ====================== -->
+<section class="chapter" id="ch2" data-screen-label="02 De Ervaring">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">UX · 9 / 9</span>
+      <h2>Praktische Tips<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <p class="block-lede" style="margin-bottom: 36px;">Negen tips, ontleend aan <span class="chip dot-magenta"><span class="d"></span>docs.mendix.com</span> en de Laws of UX. Elk een micro-principe waar je morgen iets mee kunt.</p>
+
+  <div class="grid" style="gap: 18px;">
+
+    <div class="tip">
+      <div class="num">1<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Dichtheid<span class="dot">.</span></h4><span class="tag">TIP · 1 / 9</span></div>
+        <p class="body-copy">Druk niet je hele domeinmodel plat op één scherm. Splits in betekenisvolle blokken.</p>
+        <div class="related"><b>GERELATEERD</b> Hick’s Law · Miller’s Law</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">2<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Frequentie<span class="dot">.</span></h4><span class="tag">TIP · 2 / 9</span></div>
+        <p class="body-copy">Denk aan een lade met willekeurige spullen: je zoekt je suf. Maak veel-gebruikte acties zichtbaar, maak een gestructureerde dropdown voor de rest.</p>
+        <div class="related"><b>GERELATEERD</b> Hick’s Law · Fitt’s Law · Serial Position Effect</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">3<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Oriëntatie<span class="dot">.</span></h4><span class="tag">TIP · 3 / 9</span></div>
+        <p class="body-copy">Ontwerp voor de afgeleide gebruiker op vrijdagmiddag. Maak altijd duidelijk waar iemand zit, wat erboven is, en wat de volgende stap is.</p>
+        <div class="chips">
+          <span class="chip yellow">PAGE HEADERS</span>
+          <span class="chip peach">STEPPERS</span>
+          <span class="chip cream">BREADCRUMBS</span>
+        </div>
+        <div class="related"><b>GERELATEERD</b> Jakob’s Law · Cognitive Load Theory · Zeigarnik Effect</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">4<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Witruimte<span class="dot">.</span></h4><span class="tag">TIP · 4 / 9</span></div>
+        <p class="body-copy">Max ±9 woorden per regel. Witruimte is een investering in aandacht. Lange leesregels zijn de stille killer van enterprise-schermen.</p>
+        <div class="chips">
+          <span class="chip dot-magenta"><span class="d"></span>50–75 CHAR / REGEL</span>
+          <span class="chip dot-yellow"><span class="d"></span>1.5× LINE-HEIGHT</span>
+        </div>
+        <div class="related"><b>GERELATEERD</b> Saccade-onderzoek · Gestalt Proximity · F-pattern scanning</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">5<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Compositie<span class="dot">.</span></h4><span class="tag">TIP · 5 / 9</span></div>
+        <p class="body-copy">Geen pop-up in een pop-up. Dat breekt voorspelbaarheid. Twee oplossingen: promoot de eerste pop-up tot een pagina, demoot de tweede tot een inline-bericht.</p>
+        <div class="related"><b>GERELATEERD</b> Cognitive Load Theory · Miller’s Law</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">6<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Cards<span class="dot">.</span></h4><span class="tag">TIP · 6 / 9</span></div>
+        <p class="body-copy">Een card is een omkaderd vlak met informatie die bij elkaar hoort. Plaats ze naast of onder elkaar — niet in elkaar. Twee containers in elkaar zegt tegen het brein: dit is één ding, en óók twee dingen tegelijk.</p>
+        <div class="related"><b>GERELATEERD</b> Gestalt Common Region · Cognitive Load Theory</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">7<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Forms &amp; Acties<span class="dot">.</span></h4><span class="tag">TIP · 7 / 9</span></div>
+        <p class="body-copy">Het oog leest één kolom natuurlijker. Twee kolommen = zigzag. Single-column = duidelijke flow naar beneden. Lange forms opknippen in stappen. Radio buttons, geen dropdown waar het kan.</p>
+        <div class="related"><b>GERELATEERD</b> F-pattern · Hick’s Law · Fitt’s Law · Miller’s Law</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">8<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Buttons<span class="dot">.</span></h4><span class="tag">TIP · 8 / 9</span></div>
+        <p class="body-copy">Voorwaartse actie rechts. Positief sentiment groen. Label vertelt wát hij doet.</p>
+        <div style="display: flex; gap: 12px; align-items: center; margin-top: 14px;">
+          <button class="button danger" type="button">Cancel subscription</button>
+          <button class="button good" type="button">Keep plan</button>
+        </div>
+        <div class="callout warn" style="margin-top: 18px;">
+          <span class="lab">PAS OP — DESTRUCTIEVE ACTIES</span>
+          <p>‘Cancel subscription’ is geen ‘Cancel’. Het label vertelt het brein wat er gebeurt; ‘Cancel’ alleen is ambigu en gevaarlijk.</p>
+        </div>
+        <div class="related"><b>GERELATEERD</b> Jakob’s Law · Semantic Coloring · Microcopy</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="num">9<span class="of">/9</span></div>
+      <div>
+        <div class="title-row"><h4>Communicatie<span class="dot">.</span></h4><span class="tag">TIP · 9 / 9</span></div>
+        <p class="body-copy">Vertel wat er gebeurt, en wat ze nu kunnen doen. Manage verwachtingen — specifiek, met details.</p>
+        <div class="grid cols-2" style="margin-top: 14px;">
+          <div class="callout danger">
+            <span class="lab">ANTI · ERROR</span>
+            <p>"Er ging iets mis." — Geen oorzaak, geen vervolgactie. De gebruiker staat stil.</p>
+          </div>
+          <div class="callout good">
+            <span class="lab">PRO · GEEN OPENSTAANDE TAKEN</span>
+            <p>"Order is verstuurd naar SAP. Bevestiging volgt binnen 2 min — je kunt het tabblad sluiten."</p>
+          </div>
+        </div>
+        <div class="related"><b>GERELATEERD</b> Doherty Threshold · Peak-end Rule</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================== DIVIDER · DE VORM ======================= -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 003</span>
+  <h2>De Vorm<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 3 — DE VORM ========================== -->
+<section class="chapter" id="ch3" data-screen-label="03 De Vorm">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">UI · Zes principes</span>
+      <h2>Vorm volgt functie<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <p class="block-lede" style="margin-bottom: 40px;">Consistentie, kwaliteit, connectie — zes principes die alle drie tegelijk dragen.</p>
+
+  <!-- principe 1 — Hiërarchie -->
+  <div class="block" id="hierarchie">
+    <div class="block-head">
+      <div class="left"><h3>Hiërarchie<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 1 / 6</div>
+    </div>
+    <p class="block-lede">Drie knoppen waarmee het oog gestuurd wordt: <b>formaat</b>, <b>gewicht</b>, <b>kleur</b>.</p>
+
+    <div class="hier">
+      <div class="cell">
+        <span class="lab">FORMAAT</span>
+        <div class="demo">
+          <span class="big">H1</span>
+          <span class="sm">body 14px</span>
+        </div>
+        <span class="example">Formaat stuurt het oog. 32px titel vs 14px body.</span>
+      </div>
+      <div class="cell">
+        <span class="lab">GEWICHT</span>
+        <div class="demo">
+          <span class="bold-line">CTA · BOLD</span>
+          <span class="sm">labels, regular</span>
+        </div>
+        <span class="example">Zwaarder trekt het oog. font-weight: 700.</span>
+      </div>
+      <div class="cell">
+        <span class="lab">KLEUR</span>
+        <div class="demo">
+          <span class="ctaline">Primary action</span>
+          <span class="sm">secondary text</span>
+        </div>
+        <span class="example">Kleur begeleidt het oog. 1 à 2 accentkleuren per scherm.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- principe 2 — Design Systems -->
+  <div class="block" id="design-systems">
+    <div class="block-head">
+      <div class="left"><h3>Design Systems<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 2 / 6</div>
+    </div>
+
+    <div class="card">
+      <p class="body-copy" style="font-size: 18px; max-width: 60ch;">
+        Een design system is een bibliotheek van herbruikbare bouwstenen: kleuren, typografie, knoppen, kaarten. In Mendix is dat <b>Atlas Core</b>. Niet elk scherm opnieuw uitvinden — telkens dezelfde herkenbare onderdelen.
+      </p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+        <span class="chip magenta">ATLAS CORE</span>
+        <span class="chip yellow">COMPONENT LIBRARY</span>
+        <span class="chip cream">STYLE GUIDE</span>
+      </div>
+      <div class="related"><b>GERELATEERD</b> Sessie 2 — De Praktijk · Sessie 3 — Custom UI Module</div>
+    </div>
+  </div>
+
+  <!-- principe 3 — Kleur -->
+  <div class="block" id="kleur">
+    <div class="block-head">
+      <div class="left"><h3>Kleur filosofie<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 3 / 6</div>
+    </div>
+    <p class="block-lede">Drie regels die elke kleurkeuze in je app filteren.</p>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <div class="tag-row"><span class="lhs">01 · BALANS</span><span>60 · 30 · 10</span></div>
+        <h4>60-30-10.</h4>
+        <p class="body-copy">60% neutraal (achtergrond, body). 30% secundair (containers, secties). 10% accent (primary actions).</p>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">02 · BETEKENIS</span><span>SIGNAAL</span></div>
+        <h4>Semantiek.</h4>
+        <p class="body-copy">Rood = error. Groen = success. Kleur als signaal, niet als versiering. Anti-pattern: niet misbruiken.</p>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">03 · LEESBAARHEID</span><span>WCAG · AA</span></div>
+        <h4>Contrast.</h4>
+        <p class="body-copy">AA: 4.5:1 voor body, 3:1 voor display. Test met een tool, niet met je oog. 10% van mannen is kleurenblind.</p>
+      </div>
+    </div>
+
+    <div class="swatch-row" style="margin-top: 18px;">
+      <div class="s60">
+        <span class="lab">60% · NEUTRAAL</span>
+        <span class="pct">60%</span>
+        <span class="sub">Achtergrond, body, containers.</span>
+      </div>
+      <div class="s30">
+        <span class="lab">30% · SECUNDAIR</span>
+        <span class="pct">30%</span>
+        <span class="sub">Secties, panelen.</span>
+      </div>
+      <div class="s10">
+        <span class="lab">10% · ACCENT</span>
+        <span class="pct">10%</span>
+        <span class="sub">Primary action.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- principe 4 — Typografie -->
+  <div class="block" id="typografie">
+    <div class="block-head">
+      <div class="left"><h3>Typografie<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 4 / 6</div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="tag-row"><span class="lhs">FAMILIES</span><span>1 + 1</span></div>
+        <h4>Eén heading-font, één body-font. Klaar.</h4>
+        <p class="body-copy">Soms zelfs één font (geometric sans → werkt voor beide).</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+          <span class="chip yellow">FAMILJEN GROTESK</span>
+          <span class="chip cream">INTER</span>
+          <span class="chip cream">SOURCE SANS</span>
+          <span class="chip cream">ROBOTO</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">RITME</span><span>LEZEN</span></div>
+        <h4>Leesbaarheid &gt; esthetiek.</h4>
+        <p class="body-copy">50–75 karakters per regel. 1.4–1.6× line-height op body. Gebruik <code>max-width</code> op tekstkolommen.</p>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <span class="chip dot-magenta"><span class="d"></span>50–75 CHAR</span>
+          <span class="chip dot-yellow"><span class="d"></span>1.5× LH</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- principe 5 — Iconografie -->
+  <div class="block" id="iconografie">
+    <div class="block-head">
+      <div class="left"><h3>Iconografie<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 5 / 6</div>
+    </div>
+
+    <div class="card">
+      <h4>Iconen zijn taal, geen versiering.</h4>
+      <p class="body-copy" style="max-width: 60ch;">
+        Eén familie — Atlas, Phosphor of Material. Eén stroke-weight — geen 1px en 2px door elkaar. Iconen + labels. Een icoon zonder label is een raadsel. Uitzondering: universele iconen (search, close, menu).
+      </p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+        <span class="chip cream">ATLAS</span>
+        <span class="chip cream">PHOSPHOR</span>
+        <span class="chip cream">MATERIAL</span>
+        <span class="chip magenta">GEEN MIX</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- principe 6 — Spacing -->
+  <div class="block" id="spacing">
+    <div class="block-head">
+      <div class="left"><h3>Spacing<span class="dot">.</span></h3></div>
+      <div class="right">PRINCIPE · 6 / 6</div>
+    </div>
+    <p class="block-lede">Veelvoud van 8. 8 · 16 · 24 · 32 · 48 · 64. Soms 4 voor fijne tuning. Eén rekenstap, consistentie in communicatie.</p>
+
+    <div class="scale">
+      <span class="n">4</span><span class="bar" style="width: 4px;"></span><span class="desc">FIJNE TUNING</span>
+      <span class="n">8</span><span class="bar" style="width: 8px;"></span><span class="desc">BASE STEP</span>
+      <span class="n">16</span><span class="bar" style="width: 16px;"></span><span class="desc">CARD INTERN</span>
+      <span class="n">24</span><span class="bar" style="width: 24px;"></span><span class="desc">CARD INTERN</span>
+      <span class="n">32</span><span class="bar" style="width: 32px;"></span><span class="desc">BLOK · BLOK</span>
+      <span class="n">48</span><span class="bar" style="width: 48px;"></span><span class="desc">TUSSEN SECTIES</span>
+      <span class="n">64</span><span class="bar" style="width: 64px;"></span><span class="desc">TUSSEN SECTIES</span>
+    </div>
+
+    <div class="callout good" style="margin-top: 18px;">
+      <span class="lab">TIP</span>
+      <p>Een veelvoud van 8 is een vorm van rust. Cards binnenin: 16 of 24. Tussen secties: 48 of 64.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== DIVIDER · DE GEBRUIKER ================== -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 004</span>
+  <h2>De Gebruiker<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 4 — DE GEBRUIKER ===================== -->
+<section class="chapter" id="ch4" data-screen-label="04 De Gebruiker">
+
+  <div class="quote">
+    <h3>"Jij bent niet jouw gebruiker<span class="dot">."</span></h3>
+    <div class="attr">— DONALD NORMAN · THE DESIGN OF EVERYDAY THINGS</div>
+  </div>
+
+  <!-- Drie partijen — with Bauhaus glyphs -->
+  <div class="block" id="drie-partijen">
+    <div class="block-head">
+      <div class="left"><h3>Drie partijen, drie agenda's<span class="dot">.</span></h3></div>
+      <div class="right">MEERDERE PERSPECTIEVEN</div>
+    </div>
+    <p class="block-lede">De UX-er staat tussen deze partijen in. Antwoorden op dezelfde vraag kunnen verschillen.</p>
+
+    <div class="grid cols-3">
+      <div class="role-card">
+        <div class="top-row">
+          <svg class="window" viewBox="0 0 92 60" aria-hidden="true"><use href="#g-window"/></svg>
+          <svg class="glyph" style="color: var(--yellow)" viewBox="0 0 40 40"><use href="#g-tiles"/></svg>
+        </div>
+        <span class="eyebrow small">01 · BUSINESS</span>
+        <h4>Opdrachtgever.</h4>
+        <p class="body-copy">Betaalt. Wil ROI zien. Heeft een hoog overzicht.</p>
+      </div>
+      <div class="role-card">
+        <div class="top-row">
+          <svg class="window" viewBox="0 0 92 60" aria-hidden="true"><use href="#g-window"/></svg>
+          <svg class="glyph" style="color: var(--peach)" viewBox="0 0 40 40"><use href="#g-flower"/></svg>
+        </div>
+        <span class="eyebrow small">02 · SUBJECT MATTER</span>
+        <h4>Stakeholder.</h4>
+        <p class="body-copy">Heeft een mening. Soms tien. Eén deel van de puzzel.</p>
+      </div>
+      <div class="role-card" style="border-left: 3px solid var(--magenta)">
+        <div class="top-row">
+          <svg class="window" viewBox="0 0 92 60" aria-hidden="true"><use href="#g-window"/></svg>
+          <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 40 40"><use href="#g-cross"/></svg>
+        </div>
+        <span class="eyebrow small">03 · DAILY DRIVER</span>
+        <h4>Eindgebruiker.</h4>
+        <p class="body-copy">Werk gedaan krijgen. Gebruikt de app. Elke dag.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verkeerde oplossing — three column with chip labels -->
+  <div class="block" id="probleem">
+    <div class="block-head">
+      <div class="left"><h3>De aangeboden oplossing is zelden het echte probleem<span class="dot">.</span></h3></div>
+      <div class="right">VERKEERDE OPLOSSING · CORRECT PROBLEEM</div>
+    </div>
+    <p class="block-lede">De opdrachtgever stelt vaak de verkeerde oplossing voor. Jouw werk: het probleem boven tafel krijgen.</p>
+
+    <div class="problem-board">
+      <div class="col">
+        <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+          <span class="chip yellow">AANNAME</span>
+          <span class="chip dot-magenta"><span class="d"></span>DUPLICEER KNOP</span>
+        </div>
+        <h4>"We willen een auto-invul functie."</h4>
+        <p>De opdrachtgever komt met een knop in de hand.</p>
+      </div>
+      <div class="col">
+        <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+          <span class="chip yellow">FRUSTRATIE</span>
+          <span class="chip dot-yellow"><span class="d"></span>OBSERVATIE!</span>
+        </div>
+        <h4>"Ik maak elke week 40 orders aan en word gek van overtikken."</h4>
+        <p>Het gesprek dat onder de aanname zit.</p>
+      </div>
+      <div class="col">
+        <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+          <span class="chip magenta">PROBLEEM</span>
+          <span class="chip magenta">VOORGEVULDE TEMPLATES</span>
+        </div>
+        <h4>Repetitieve invoer.</h4>
+        <p>Dezelfde frustratie. Andere oplossing — beter, goedkoper, of allebei.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gedrag vs houding -->
+  <div class="block" id="gedrag-houding">
+    <div class="block-head">
+      <div class="left"><h3>Wat mensen zeggen, is niet wat ze doen<span class="dot">.</span></h3></div>
+      <div class="right">GEDRAG · HOUDING</div>
+    </div>
+    <p class="block-lede">De échte requirement zit nooit in wat ze zeggen — die zit in wat ze doen.</p>
+
+    <div class="behaviour">
+      <div class="col">
+        <span class="lab">WAT ZE ZEGGEN · HOUDING</span>
+        <span class="lead">"Rapportage-scherm is top."</span>
+        <p class="body-copy" style="color: var(--ink-soft); font-size: 16px;">Beleefd. Gemiddeld. Niet de échte requirement.</p>
+      </div>
+      <div class="col gedrag">
+        <span class="lab" style="color: var(--magenta)">WAT ZE DOEN · GEDRAG</span>
+        <span class="lead">Maakt screenshots van het scherm.</span>
+        <p class="body-copy" style="color: var(--ink-2); font-size: 16px;">Het scherm is op zichzelf onvoldoende — de echte taak vraagt om kopiëren naar e-mail, PowerPoint, een chat.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methoden -->
+  <div class="block" id="research-methods">
+    <div class="block-head">
+      <div class="left"><h3>Wat wil je te weten komen?</h3></div>
+      <div class="right">BEGIN BIJ DE VRAAG</div>
+    </div>
+    <p class="block-lede">Vier vragen, vier methoden. De vraag bepaalt de methode — niet andersom.</p>
+
+    <div class="research-grid">
+      <div class="research">
+        <span class="lab">INTERVIEWS</span>
+        <h4>Wat denken mensen?</h4>
+        <p class="body-copy">Hun ervaringen, motivaties en belevingen.</p>
+      </div>
+      <div class="research">
+        <span class="lab">OBSERVATIE</span>
+        <h4>Wat doen mensen?</h4>
+        <p class="body-copy">Hun feitelijke gedrag — vaak anders dan wat ze zeggen.</p>
+      </div>
+      <div class="research">
+        <span class="lab">USABILITY TEST</span>
+        <h4>Waarom faalt dit scherm?</h4>
+        <p class="body-copy">Een specifiek usability-probleem opsporen.</p>
+      </div>
+      <div class="research">
+        <span class="lab">ANALYTICS</span>
+        <h4>Hoeveel mensen ervaren dit?</h4>
+        <p class="body-copy">Schaal. Is dit één geval of een patroon?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interview basisregels -->
+  <div class="block" id="interviews">
+    <div class="block-head">
+      <div class="left"><h3>Interviews — drie basisregels<span class="dot">.</span></h3></div>
+      <div class="right">OPEN · NIET-LEADING · STILTE</div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <div class="tag-row"><span class="lhs">01</span><span>OPEN VRAGEN</span></div>
+        <h4>Open vragen.</h4>
+        <p class="body-copy">Geen ja/nee. Begin met "Vertel eens over..." of "Hoe ging dat de laatste keer dat...".</p>
+        <div style="margin-top: 6px;"><span class="chip yellow">"VERTEL EENS OVER GISTEREN"</span></div>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">02</span><span>NIET LEADING</span></div>
+        <h4>Niet leading.</h4>
+        <p class="body-copy">"Vind je dit fijn?" laadt het antwoord. "Hoe ervaar je dit?" laat ruimte voor het échte antwoord.</p>
+        <div style="margin-top: 6px;"><span class="chip magenta">VERMIJD BIJVOEGLIJKE NAAMWOORDEN</span></div>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">03</span><span>STILTES</span></div>
+        <h4>Stiltes.</h4>
+        <p class="body-copy">Mensen vullen graag in. Wacht 5 seconden langer dan comfortabel — daar komen de échte antwoorden.</p>
+        <div style="margin-top: 6px;"><span class="chip peach">TEL · 1 · 2 · 3 · 4 · 5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5x Waarom -->
+  <div class="block" id="five-whys">
+    <div class="block-head">
+      <div class="left"><h3>5× Waarom?</h3></div>
+      <div class="right">SYMPTOOM → OORZAAK</div>
+    </div>
+
+    <div class="whys">
+      <div class="stem">"Gebruikers maken veel fouten in dit formulier."</div>
+      <div class="why-row">
+        <span class="lab">Waarom (1)</span>
+        <span class="q"><span class="d"></span>"Waarom maken ze fouten?"</span>
+        <span class="a">ZE VULLEN HET VERKEERDE VELD IN</span>
+      </div>
+      <div class="why-row">
+        <span class="lab">Waarom (2)</span>
+        <span class="q"><span class="d"></span>"Waarom vullen ze het verkeerde veld in?"</span>
+        <span class="a">DE LABELS ZIJN NIET DUIDELIJK</span>
+      </div>
+      <div class="why-row">
+        <span class="lab">Waarom (3)</span>
+        <span class="q"><span class="d"></span>"Waarom zijn de labels onduidelijk?"</span>
+        <span class="a">ZE ZIJN GEVULD MET DE ATTRIBUUT-NAAM</span>
+      </div>
+      <div class="why-row">
+        <span class="lab">Waarom (4)</span>
+        <span class="q"><span class="d"></span>"Waarom de attribuut-naam?"</span>
+        <span class="a">DAT WAS DE DEFAULT</span>
+      </div>
+      <div class="why-row">
+        <span class="lab">Waarom (5)</span>
+        <span class="q"><span class="d"></span>"Waarom zijn die default?"</span>
+        <span class="a">NOOIT AANGEPAST</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Observatie -->
+  <div class="block" id="observatie">
+    <div class="block-head">
+      <div class="left"><h3>Kijk mee over de schouder<span class="dot">.</span></h3></div>
+      <div class="right">OBSERVEER</div>
+    </div>
+    <p class="block-lede">Mensen vertellen niet wat ze hacken. Je ziet het pas als je naast ze zit.</p>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="tag-row"><span class="lhs">VAN DICHTBIJ</span><span>SCREEN-LEVEL</span></div>
+        <h4>Welke tabs staan open?</h4>
+        <p class="body-copy">Excel ernaast. Een tweede browser-venster voor de "oude" app. Een notepad met wachtwoorden of waarden om over te tikken.</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+          <span class="chip yellow">GEELTJES</span>
+          <span class="chip peach">SHORTCUTS</span>
+          <span class="chip cream">DUAL SCREENS</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag-row"><span class="lhs">OP AFSTAND</span><span>FLOW-LEVEL</span></div>
+        <h4>Welke shortcuts gebruiken ze?</h4>
+        <p class="body-copy">Welke gegevens kopiëren ze waar naartoe? Welke knop wordt 20 keer per dag geklikt en welke nooit?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JTBD -->
+  <div class="block" id="jtbd">
+    <div class="jtbd-head">
+      <h3>"Mensen willen geen 8mm boortje, ze willen een 8mm gat<span class="dot">."</span></h3>
+      <span class="eyebrow">JOBS · TO · BE · DONE</span>
+    </div>
+
+    <div class="jtbd">
+      <div class="formula">
+        Wanneer ik <span class="slot">[situatie]</span>, wil ik <span class="slot">[motivatie]</span>, zodat ik <span class="slot">[verwacht resultaat]</span>.
+      </div>
+      <p class="body-copy" style="color: var(--ink-soft); max-width: 60ch; font-size: 16px;">
+        Een job-statement vangt het echt-onderliggende-doel los van een specifieke oplossing. Hetzelfde "gat" kan op tien manieren geboord worden.
+      </p>
+      <div class="related"><b>QUOTE</b> Theodore Levitt via Leo McGivena (Harvard Business School). Gepopulariseerd door Clayton Christensen in Jobs-To-Be-Done.</div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ============================== DIVIDER · ONS BREIN ===================== -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 005</span>
+  <h2>Ons brein<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 5 — ONS BREIN ======================== -->
+<section class="chapter" id="ch5" data-screen-label="05 Ons Brein">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">Laws of UX · 12 / 30</span>
+      <h2>Vijf categorieën, twaalf wetten<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <p class="block-lede" style="margin-bottom: 36px;">Geselecteerd uit ±30 op <span class="chip dot-magenta"><span class="d"></span>lawsofux.com</span>.</p>
+
+  <!-- Categorie kop: Cognitief -->
+  <div class="block" id="cat-cognitief">
+    <div class="block-head">
+      <div class="left">
+        <h3>Cognitieve belasting<span class="dot">.</span></h3>
+      </div>
+      <div class="right">HICK · MILLER · TESLER</div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="law">
+        <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 40 40"><use href="#g-tiles"/></svg>
+        <div class="top"><span class="name">Hick’s Law<span class="dot">.</span></span><span class="tag">LAW · 1 / 12</span></div>
+        <p class="body-copy">Hoe meer opties je toont, hoe langer iemand erover doet. Logaritmisch — 2× zoveel knoppen ≠ 2× zo lang nadenken, maar wel merkbaar trager.</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <span class="chip cream">MINIMALISEER KEUZES</span>
+          <span class="chip cream">SMALLER STEPS</span>
+        </div>
+        <div class="think"><b>FORMULE</b> RT = a + b · log₂(N + 1)</div>
+      </div>
+
+      <div class="law">
+        <svg class="glyph" style="color: var(--yellow)" viewBox="0 0 40 40"><use href="#g-flower"/></svg>
+        <div class="top"><span class="name">Miller’s Law<span class="dot">.</span></span><span class="tag">LAW · 2 / 12</span></div>
+        <p class="body-copy">Het menselijk werkgeheugen houdt ongeveer zeven dingen vast — soms negen, zelden meer. Chunken verhoogt de capaciteit.</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <span class="chip cream">MAAK CHUNKS</span>
+          <span class="chip cream">PERSOONLIJK</span>
+        </div>
+      </div>
+
+      <div class="law">
+        <svg class="glyph" style="color: var(--peach)" viewBox="0 0 40 40"><use href="#g-cross"/></svg>
+        <div class="top"><span class="name">Tesler’s Law<span class="dot">.</span></span><span class="tag">LAW · 3 / 12</span></div>
+        <p class="body-copy">Elke taak heeft een onvermijdelijke hoeveelheid complexiteit. De vraag is: wie draagt 'm — de gebruiker of het systeem?</p>
+        <div class="think"><b>DENK AAN</b> Auto-fill binnen een formulier.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categorie: Motoriek -->
+  <div class="block" id="cat-motoriek">
+    <div class="block-head">
+      <div class="left"><h3>Motoriek<span class="dot">.</span></h3></div>
+      <div class="right">FITT · DOHERTY</div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="law">
+        <svg class="glyph" style="color: var(--violet)" viewBox="0 0 40 40"><use href="#g-star"/></svg>
+        <div class="top"><span class="name">Fitt’s Law<span class="dot">.</span></span><span class="tag">LAW · 4 / 12</span></div>
+        <p class="body-copy">Groter en dichterbij = sneller te raken. Tijd om iets te raken hangt af van grootte en afstand. Logaritmisch verband.</p>
+        <div class="think"><b>DENK AAN</b> Touch-targets min. 44px · Belangrijke acties groot en bereikbaar · Schermrand.</div>
+      </div>
+
+      <div class="law">
+        <svg class="glyph" style="color: var(--mint)" viewBox="0 0 60 30"><use href="#g-region"/></svg>
+        <div class="top"><span class="name">Doherty Threshold<span class="dot">.</span></span><span class="tag">LAW · 5 / 12</span></div>
+        <p class="body-copy">&lt; 400ms responsief, voelt direct. 400ms – 1s merkbaar, "even wachten". &gt; 1s frustrerend, het brein gaat al weg.</p>
+        <div class="think"><b>DENK AAN</b> Optimistic UI updates · Skeleton loaders · Progress bars.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categorie: Gestalt — 4 quadrants with shape demos -->
+  <div class="block" id="cat-gestalt">
+    <div class="block-head">
+      <div class="left"><h3>Het oog groepeert automatisch<span class="dot">.</span></h3></div>
+      <div class="right">GESTALT · LAW 6 – 9</div>
+    </div>
+
+    <div class="gestalt">
+      <div class="cell">
+        <div class="demo"><svg viewBox="0 0 60 30" width="80" height="40" style="color: var(--magenta)"><use href="#g-prox"/></svg></div>
+        <h4>Proximity.</h4>
+        <p>Wat dicht bij elkaar staat, hoort bij elkaar.</p>
+      </div>
+      <div class="cell">
+        <div class="demo"><svg viewBox="0 0 60 30" width="80" height="40" style="color: var(--yellow)"><use href="#g-sim"/></svg></div>
+        <h4>Similarity.</h4>
+        <p>Wat hetzelfde lijkt, hoort bij elkaar.</p>
+      </div>
+      <div class="cell">
+        <div class="demo"><svg viewBox="0 0 60 30" width="80" height="40" style="color: var(--peach)"><use href="#g-region"/></svg></div>
+        <h4>Common Region.</h4>
+        <p>Wat in hetzelfde vlak zit, hoort bij elkaar.</p>
+      </div>
+      <div class="cell">
+        <div class="demo"><svg viewBox="0 0 60 30" width="80" height="40" style="color: var(--violet)"><use href="#g-closure"/></svg></div>
+        <h4>Closure.</h4>
+        <p>Brein maakt onafgemaakte vormen af.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scan patterns -->
+  <div class="block" id="cat-scan">
+    <div class="block-head">
+      <div class="left"><h3>Het oog scant<span class="dot">.</span></h3></div>
+      <div class="right">SCAN-PATRONEN</div>
+    </div>
+    <p class="block-lede">Voor het brein één woord leest, scant het de silhouet van een pagina. Waar zijn de blokken? Waar zit de header? Waar landt de aandacht?</p>
+
+    <div class="grid cols-3">
+      <div class="scan-card">
+        <div class="demo">
+          <!-- silhouette of blocks -->
+          <svg viewBox="0 0 200 130" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <rect x="10" y="10" width="180" height="14" rx="3" fill="#fff" opacity=".9"/>
+            <rect x="10" y="34" width="100" height="40" rx="3" fill="#fff" opacity=".55"/>
+            <rect x="118" y="34" width="72" height="40" rx="3" fill="#fff" opacity=".4"/>
+            <rect x="10" y="82" width="60" height="38" rx="3" fill="#fff" opacity=".3"/>
+            <rect x="78" y="82" width="60" height="38" rx="3" fill="#fff" opacity=".3"/>
+            <rect x="146" y="82" width="44" height="38" rx="3" fill="#ff1fba"/>
+          </svg>
+        </div>
+        <h4>Silhouet eerst.</h4>
+        <p>Rommel = veel werk. Rust = vertrouwen.</p>
+      </div>
+      <div class="scan-card">
+        <div class="demo">
+          <!-- F-pattern -->
+          <svg viewBox="0 0 200 130" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <rect x="10" y="14" width="180" height="6" fill="#fff" opacity=".4"/>
+            <rect x="10" y="28" width="140" height="6" fill="#fff" opacity=".3"/>
+            <rect x="10" y="50" width="120" height="6" fill="#fff" opacity=".3"/>
+            <rect x="10" y="64" width="80"  height="6" fill="#fff" opacity=".2"/>
+            <rect x="10" y="86" width="60"  height="6" fill="#fff" opacity=".2"/>
+            <rect x="10" y="100" width="40" height="6" fill="#fff" opacity=".15"/>
+            <path d="M10 16 L180 16 L120 16 M10 16 L10 110 M10 52 L120 52" fill="none" stroke="#ff1fba" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h4>F-patroon · tekst.</h4>
+        <p>Bovenste regel, dan een tweede horizontale beweging. Daarna verticaal langs links.</p>
+        <div class="related"><b>TOEPASSING</b> Belangrijke info bovenaan, secundaire links.</div>
+      </div>
+      <div class="scan-card">
+        <div class="demo">
+          <!-- Z-pattern -->
+          <svg viewBox="0 0 200 130" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <rect x="10" y="10" width="180" height="14" rx="3" fill="#fff" opacity=".5"/>
+            <rect x="10" y="98" width="40" height="20" rx="3" fill="#fff" opacity=".3"/>
+            <rect x="148" y="98" width="42" height="20" rx="3" fill="#ff1fba"/>
+            <path d="M16 18 L186 18 L16 110 L186 110" fill="none" stroke="#ff1fba" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h4>Z-patroon · scherm.</h4>
+        <p>Linksboven → rechtsboven (header). Diagonaal naar linksonder (anker). Naar rechtsonder (CTA).</p>
+        <div class="related"><b>TOEPASSING</b> Primaire actie rechts-onder.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Geheugen -->
+  <div class="block" id="cat-geheugen">
+    <div class="block-head">
+      <div class="left"><h3>Wat blijft hangen, en wat niet<span class="dot">.</span></h3></div>
+      <div class="right">GEHEUGEN · LAW 10 – 12</div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="law">
+        <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 60 30"><use href="#g-prox"/></svg>
+        <div class="top"><span class="name">Serial Position<span class="dot">.</span></span><span class="tag">10 / 12</span></div>
+        <p class="body-copy">Mensen onthouden de eerste en laatste items, niet wat ertussen zit.</p>
+        <div class="think"><b>DOE</b> Belangrijke acties aan de rand.</div>
+      </div>
+      <div class="law">
+        <svg class="glyph" style="color: var(--yellow)" viewBox="0 0 40 40"><use href="#g-star"/></svg>
+        <div class="top"><span class="name">Von Restorff<span class="dot">.</span></span><span class="tag">11 / 12</span></div>
+        <p class="body-copy">Als alles even hard schreeuwt, blijft niets hangen. Eén accent doet meer dan tien.</p>
+        <div class="think"><b>DOE</b> Eén primary knop per scherm.</div>
+      </div>
+      <div class="law">
+        <svg class="glyph" style="color: var(--peach)" viewBox="0 0 60 30"><use href="#g-closure"/></svg>
+        <div class="top"><span class="name">Zeigarnik<span class="dot">.</span></span><span class="tag">12 / 12</span></div>
+        <p class="body-copy">Onafgemaakte taken trekken aandacht.</p>
+        <div class="think"><b>DOE</b> Onboarding checklists.</div>
+      </div>
+      <div class="law">
+        <svg class="glyph" style="color: var(--violet)" viewBox="0 0 40 40"><use href="#g-flower"/></svg>
+        <div class="top"><span class="name">Peak-End<span class="dot">.</span></span><span class="tag">BONUS</span></div>
+        <p class="body-copy">Mensen onthouden de piek en het einde van een ervaring.</p>
+        <div class="think"><b>DOE</b> Behulpzame errors. "Thanks for subscribing"-momenten.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jakob -->
+  <div class="block" id="cat-conventies">
+    <div class="block-head">
+      <div class="left"><h3>Conventies<span class="dot">.</span></h3></div>
+      <div class="right">JAKOB</div>
+    </div>
+
+    <div class="law">
+      <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 60 30"><use href="#g-region"/></svg>
+      <div class="top"><span class="name">Jakob’s Law<span class="dot">.</span></span><span class="tag">CONVENTIES</span></div>
+      <p class="body-copy" style="max-width: 60ch;">Gebruikers brengen het grootste deel van hun tijd door op <em>andere</em> sites. Ze verwachten dat jouw site werkt zoals alle anderen die ze al kennen. Innoveer waar het écht waarde toevoegt — niet op login, niet op de winkelmand, niet op de filter-chip.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== DIVIDER · DE TOEKOMST =================== -->
+<div class="divider">
+  <span class="eyebrow">CHAPTER · 006</span>
+  <h2>De Toekomst<span class="dot">.</span></h2>
+</div>
+
+
+<!-- ============================== CH 6 — TOEKOMST ======================== -->
+<section class="chapter" id="ch6" data-screen-label="06 De Toekomst">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">AI · GenUI · Human</span>
+      <h2>Een richting, geen voorspelling<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-bottom: 36px;">
+    <span class="lab">DISCLAIMER</span>
+    <p>Wat hier staat is een richting, geen voorspelling.</p>
+  </div>
+
+  <!-- Rood / Blauw -->
+  <div class="block" id="redblue">
+    <div class="block-head">
+      <div class="left"><h3>Twee pillen<span class="dot">.</span></h3></div>
+      <div class="right">DE KEUZE</div>
+    </div>
+    <p class="block-lede">Er is een keuze. Of je omarmt een toekomst waarin AI een rol speelt — of je blijft koppig achter. Hierna duiken we in die toekomst.</p>
+
+    <div class="rb-grid">
+      <div class="rb-card rood">
+        <span class="pill-row">PILL · 01</span>
+        <span class="lab">Rood</span>
+        <h4>Blijf koppig achter.</h4>
+        <p>Doen wat we altijd al deden. Geen AI in het proces. Hetzelfde tempo, hetzelfde scherm, hetzelfde resultaat.</p>
+      </div>
+      <div class="rb-card blauw">
+        <span class="pill-row">PILL · 02</span>
+        <span class="lab">Blauw</span>
+        <h4>Omarm de toekomst.</h4>
+        <p>AI krijgt een rol. Voor ons als makers — én voor de gebruiker. Hierna gaan we in op hoe die toekomst eruitziet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Maker naar redacteur -->
+  <div class="block" id="maker-redacteur">
+    <div class="block-head">
+      <div class="left"><h3>Van maker naar redacteur<span class="dot">.</span></h3></div>
+      <div class="right">10× SNELLER DOOR AI</div>
+    </div>
+
+    <div class="split-2">
+      <div class="panel">
+        <div class="head"><h4>AI doet het werk.</h4><span class="tag">SNEL ITEREREN</span></div>
+        <ul>
+          <li>Copy in 4 tonen.</li>
+          <li>Transcripten clusteren.</li>
+          <li>12 varianten van een card.</li>
+          <li>WCAG-checks automatiseren.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="head"><h4>De mens beslist.</h4><span class="tag">NOG STEEDS MENSEN</span></div>
+        <ul>
+          <li>De juiste prompt.</li>
+          <li>Keuze welke toon.</li>
+          <li>Tussen de regels lezen.</li>
+          <li>Beslissen wat we bouwen.</li>
+          <li>Empathie voor de medemens.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1 Prompt -->
+  <div class="block" id="prompt">
+    <div class="block-head">
+      <div class="left"><h3>Eén prompt<span class="dot">.</span></h3></div>
+      <div class="right">VOORBEELD · INPUT</div>
+    </div>
+
+    <div class="prompt">
+      <span class="label"><span class="d"></span>1 PROMPT</span>
+      <span class="text">We are an insurance company and we are busy creating a new web application where our clients can request a quote for an insurance.<br>
+      We have 3 insurance categories: car, house and healthcare.<br>
+      You are a senior UX designer.<br><br>
+      Can you create a page where the user sees an overview of all the available insurance categories?<br>
+      There must be a button on the page where the user can request a new quote.<br>
+      I want a design based on Material UI. I want purple to be the highlight color.</span>
+    </div>
+  </div>
+
+  <!-- Dynamische interfaces -->
+  <div class="block" id="dyn">
+    <div class="block-head">
+      <div class="left"><h3>Dynamische interfaces<span class="dot">.</span></h3></div>
+      <div class="right">VANDAAG · MORGEN</div>
+    </div>
+
+    <div class="split-2">
+      <div class="panel">
+        <div class="head"><h4>Vandaag.</h4><span class="tag">STATISCH</span></div>
+        <p class="body-copy">Dashboard → filteren → sorteren → vinden.</p>
+        <p class="body-copy" style="color: var(--ink-soft);">7 klikken, 3 schermen. Vaste navigatie voor iedereen.</p>
+      </div>
+      <div class="panel gen">
+        <div class="head"><h4>Morgen.</h4><span class="tag">DYNAMISCH</span></div>
+        <p class="body-copy">"Welke taken staan voor me open?"</p>
+        <p class="body-copy" style="color: var(--ink-soft);">Eén vraag, één gegenereerd overzicht. Interface op maat, per vraag, per moment.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top: 18px;">
+      <span class="lab">DISCLAIMER · NAMING</span>
+      <p>Namen zijn nog in ontwikkeling door Google, Vercel, etc. — A2UI, AG-UI.</p>
+    </div>
+  </div>
+
+  <!-- Generative vs declarative -->
+  <div class="block" id="gen-vs-dec">
+    <div class="block-head">
+      <div class="left"><h3>Generative vs. declarative<span class="dot">.</span></h3></div>
+      <div class="right">INTERFACES VAN MORGEN</div>
+    </div>
+
+    <div class="split-2">
+      <div class="panel gen">
+        <div class="head"><h4>Generative UI.</h4><span class="tag">OPEN</span></div>
+        <ul>
+          <li>LLM genereert HTML/CSS, alles is mogelijk.</li>
+          <li>Maximale flexibiliteit.</li>
+          <li>Wisselende kwaliteit, lastig te auditen.</li>
+          <li>Voor experiment, consumer-apps.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="head"><h4>Declarative UI.</h4><span class="tag">GESTRUCTUREERD</span></div>
+        <ul>
+          <li>LLM kiest uit een catalogus van componenten.</li>
+          <li>Voorspelbaar, consistent, veilig.</li>
+          <li>Werkt binnen jouw design system.</li>
+          <li>Voor enterprise, Mendix, gereguleerde sectoren.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Principes blijven -->
+  <div class="block" id="principes-blijven">
+    <div class="block-head">
+      <div class="left"><h3>Principes blijven relevant<span class="dot">.</span></h3></div>
+      <div class="right">NIEUWE BOUWSTENEN · ZELFDE PRINCIPES</div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card has-glyph">
+        <svg class="glyph" style="color: var(--magenta)" viewBox="0 0 40 40"><use href="#g-tiles"/></svg>
+        <div class="tag-row"><span class="lhs">01</span><span>HIËRARCHIE</span></div>
+        <h4>Hiërarchie blijft.</h4>
+        <p class="body-copy">Een gegenereerd dashboard moet nog steeds laten zien waar je eerst kijkt.</p>
+      </div>
+      <div class="card has-glyph">
+        <svg class="glyph" style="color: var(--yellow)" viewBox="0 0 40 40"><use href="#g-flower"/></svg>
+        <div class="tag-row"><span class="lhs">02</span><span>JUISTE VRAGEN</span></div>
+        <h4>De juiste vragen.</h4>
+        <p class="body-copy">"Wat is het probleem?" De Laws of UX zijn belangrijker dan ooit.</p>
+      </div>
+      <div class="card has-glyph accent">
+        <svg class="glyph" style="color: var(--violet)" viewBox="0 0 40 40"><use href="#g-cross"/></svg>
+        <div class="tag-row"><span class="lhs">03</span><span>SMAAK</span></div>
+        <h4>Smaak blijft.</h4>
+        <p class="body-copy">AI weet wat gemiddeld goed is. Niet wat hier specifiek juist is.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== NEXT TIME ============================== -->
+<section class="chapter" id="next" data-screen-label="08 Volgende sessie">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">Volgende keer</span>
+      <h2>Tot de volgende sessie<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card accent">
+      <div class="tag-row"><span class="lhs">02 · NEXT</span><span>Sessie 2</span></div>
+      <h4>De Praktijk<span class="dot">.</span></h4>
+      <p class="body-copy">Hoe implementeer je goede UX/UI in Mendix. Hoe ontstaat een symbiose met de Atlas Core.</p>
+    </div>
+    <div class="card">
+      <div class="tag-row"><span class="lhs">03</span><span>Sessie 3</span></div>
+      <h4>De Pro<span class="dot">.</span></h4>
+      <p class="body-copy">Custom UI Module, SCSS architectuur, custom design properties, design tokens.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== CONTACT / FOOT ========================= -->
+<section class="chapter" id="contact" data-screen-label="09 Sprekers">
+  <div class="chap-head">
+    <div class="chap-title">
+      <span class="eyebrow">Vragen? Bel ons.</span>
+      <h2>Dankjewel<span class="dot">.</span></h2>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>
+      <h3>Sprekers<span class="dot">.</span></h3>
+      <div class="speakers">
+        <div class="sp">
+          <span class="name">Timothy Maurer</span>
+          <span class="role">Mendix Consultant · UX Engineer</span>
+          <span class="em">timothy.maurer@aiden.eu</span>
+        </div>
+        <div class="sp">
+          <span class="name">Laurens-Jan van Borssum Waalkes</span>
+          <span class="role">Practice Manager</span>
+          <span class="em">laurens-jan.van.borssum.waalkes@aiden.eu</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Resources<span class="dot">.</span></h3>
+      <div class="res">
+        <a href="https://lawsofux.com" target="_blank" rel="noopener">lawsofux.com</a> &nbsp;·&nbsp;
+        <a href="https://docs.mendix.com" target="_blank" rel="noopener">docs.mendix.com</a><br>
+        <a href="https://www.nngroup.com" target="_blank" rel="noopener">nngroup.com</a> &nbsp;·&nbsp;
+        <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener">WCAG</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- floating sidebar-toggle, always visible at top-right of viewport -->
+<button class="rail-toggle" id="rail-toggle" aria-label="Menu" type="button">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="16" rx="2"/>
+    <line x1="9" y1="4" x2="9" y2="20"/>
+  </svg>
+</button>
+
+<!-- highlight active rail item on scroll -->
+<script>
+(function() {
+  const shell = document.querySelector('.shell');
+  const toggle = document.getElementById('rail-toggle');
+  toggle.addEventListener('click', () => shell.classList.toggle('is-collapsed'));
+})();
+</script>
+
+<script>
+(function() {
+  const links = Array.from(document.querySelectorAll('.rail a.rail-item'));
+  const map = new Map();
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) map.set(el, a);
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      const a = map.get(en.target);
+      if (!a) return;
+      if (en.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  map.forEach((_, el) => obs.observe(el));
+})();
+</script>
+
+</body>
+</html>
