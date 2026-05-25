@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sessions — tim maurer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: #000;
+            color: #fff;
+            font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .terminal {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            min-height: 100vh;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+            opacity: 0.4;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border: 1.5px solid #fff;
+            border-radius: 0;
+        }
+
+        .line {
+            display: flex;
+            min-height: 1.6em;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .prompt {
+            color: #fff;
+            opacity: 0.5;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .command {
+            color: #fff;
+        }
+
+        .output {
+            color: #fff;
+            opacity: 0.7;
+            padding-left: 24px;
+        }
+
+        .status-live {
+            color: #7FE34E;
+        }
+
+        .status-soon {
+            color: #FFB8E4;
+            opacity: 0.7;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: underline;
+            text-decoration-color: rgba(255, 255, 255, 0.3);
+            text-underline-offset: 4px;
+            transition: text-decoration-color 0.15s;
+        }
+
+        a:hover {
+            text-decoration-color: #fff;
+        }
+
+        .blank {
+            height: 1.6em;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 9px;
+            height: 1em;
+            background: #fff;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        .ascii-art {
+            font-size: 11px;
+            line-height: 1.2;
+            opacity: 0.6;
+            margin: 20px 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 600px) {
+            .terminal {
+                padding: 40px 20px;
+            }
+            body {
+                font-size: 13px;
+            }
+            .ascii-art {
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const lines = [
+            { type: 'command', text: 'whoami', delay: 600 },
+            { type: 'output', text: 'tim maurer · mendix ux engineer · aiden', delay: 80 },
+            { type: 'blank' },
+            { type: 'command', text: 'pwd', delay: 800 },
+            { type: 'output', text: '/sessions', delay: 80 },
+            { type: 'blank' },
+            { type: 'command', text: 'ls -la', delay: 800 },
+            { type: 'output', text: 'total 1 session, more incoming', delay: 60 },
+            { type: 'blank' },
+            { 
+                type: 'session', 
+                path: '/uxui-principes', 
+                title: 'ux/ui foundations',
+                meta: 'session 1 of 3',
+                status: 'live',
+                href: '/uxui-principes/',
+                delay: 80
+            },
+            { 
+                type: 'session', 
+                path: '/uxui-mendix', 
+                title: 'ux/ui in mendix',
+                meta: 'session 2 of 3',
+                status: 'soon',
+                delay: 60
+            },
+            { 
+                type: 'session', 
+                path: '/uxui-systems', 
+                title: 'custom ui modules',
+                meta: 'session 3 of 3',
+                status: 'soon',
+                delay: 60
+            },
+            { type: 'blank' },
+            { type: 'command', text: 'cat about.txt', delay: 900 },
+            { type: 'output', text: 'a growing collection of knowledge sessions on', delay: 60 },
+            { type: 'output', text: 'ux, design systems, and mendix development.', delay: 30 },
+            { type: 'blank' },
+            { type: 'output', text: 'started internally at aiden, shared publicly here.', delay: 30 },
+            { type: 'blank' },
+            { type: 'command', text: 'echo $LINKS', delay: 900 },
+            { 
+                type: 'output-html', 
+                html: 'portfolio   <a href="https://timothymaurer.nl" target="_blank">timothymaurer.nl</a>',
+                delay: 60
+            },
+            { 
+                type: 'output-html', 
+                html: 'tools       <a href="https://mxinspector.com" target="_blank">mxinspector.com</a>',
+                delay: 30
+            },
+            { 
+                type: 'output-html', 
+                html: 'github      <a href="https://github.com/tapmaurer-repo" target="_blank">@tapmaurer-repo</a>',
+                delay: 30
+            },
+            { type: 'blank' },
+            { type: 'prompt-only', delay: 600 }
+        ];
+
+        const output = document.getElementById('output');
+        let lineIndex = 0;
+
+        function typeText(element, text, charDelay = 18, callback) {
+            let i = 0;
+            element.textContent = '';
+            
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    if (callback) callback();
+                }
+            }, charDelay);
+        }
+
+        function addLine(lineConfig) {
+            if (lineConfig.type === 'blank') {
+                const blankDiv = document.createElement('div');
+                blankDiv.className = 'blank';
+                output.appendChild(blankDiv);
+                processNextLine();
+                return;
+            }
+
+            if (lineConfig.type === 'command') {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                
+                const promptSpan = document.createElement('span');
+                promptSpan.className = 'prompt';
+                promptSpan.textContent = '~$';
+                
+                const cmdSpan = document.createElement('span');
+                cmdSpan.className = 'command';
+                
+                lineDiv.appendChild(promptSpan);
+                lineDiv.appendChild(cmdSpan);
+                output.appendChild(lineDiv);
+                
+                typeText(cmdSpan, lineConfig.text, 28, processNextLine);
+                return;
+            }
+
+            if (lineConfig.type === 'output') {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                
+                const outSpan = document.createElement('span');
+                outSpan.className = 'output';
+                outSpan.textContent = '> ';
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'output';
+                
+                lineDiv.appendChild(outSpan);
+                lineDiv.appendChild(textSpan);
+                output.appendChild(lineDiv);
+                
+                typeText(textSpan, lineConfig.text, lineConfig.delay || 14, processNextLine);
+                return;
+            }
+
+            if (lineConfig.type === 'output-html') {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                
+                const outSpan = document.createElement('span');
+                outSpan.className = 'output';
+                outSpan.textContent = '> ';
+                
+                const htmlSpan = document.createElement('span');
+                htmlSpan.className = 'output';
+                htmlSpan.innerHTML = lineConfig.html;
+                
+                lineDiv.appendChild(outSpan);
+                lineDiv.appendChild(htmlSpan);
+                output.appendChild(lineDiv);
+                
+                setTimeout(processNextLine, 100);
+                return;
+            }
+
+            if (lineConfig.type === 'session') {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                
+                const outSpan = document.createElement('span');
+                outSpan.className = 'output';
+                outSpan.textContent = '> ';
+                
+                const sessionSpan = document.createElement('span');
+                sessionSpan.className = 'output';
+                
+                if (lineConfig.status === 'live') {
+                    sessionSpan.innerHTML = 
+                        `<a href="${lineConfig.href}">${lineConfig.path}</a>` +
+                        `  · ${lineConfig.title}` +
+                        `  <span class="status-live">[${lineConfig.status}]</span>`;
+                } else {
+                    sessionSpan.innerHTML = 
+                        `${lineConfig.path}` +
+                        `  · ${lineConfig.title}` +
+                        `  <span class="status-soon">[${lineConfig.status}]</span>`;
+                }
+                
+                lineDiv.appendChild(outSpan);
+                lineDiv.appendChild(sessionSpan);
+                output.appendChild(lineDiv);
+                
+                setTimeout(processNextLine, 150);
+                return;
+            }
+
+            if (lineConfig.type === 'prompt-only') {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'line';
+                
+                const promptSpan = document.createElement('span');
+                promptSpan.className = 'prompt';
+                promptSpan.textContent = '~$';
+                
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'cursor';
+                
+                lineDiv.appendChild(promptSpan);
+                lineDiv.appendChild(document.createTextNode(' '));
+                lineDiv.appendChild(cursorSpan);
+                output.appendChild(lineDiv);
+                return;
+            }
+        }
+
+        function processNextLine() {
+            if (lineIndex >= lines.length) return;
+            
+            const currentLine = lines[lineIndex];
+            lineIndex++;
+            
+            const delay = currentLine.delay || 200;
+            setTimeout(() => addLine(currentLine), delay);
+        }
+
+        // Start the sequence
+        setTimeout(processNextLine, 400);
+    </script>
+</body>
+</html>
