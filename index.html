@@ -1,358 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sessions — tim maurer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sessions — tim maurer</title>
+<meta name="description" content="Knowledge sessions and presentations by Tim Maurer — UX, UI, design systems, and Mendix development.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-        html, body {
-            background: #000;
-            color: #fff;
-            font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
-            min-height: 100vh;
-            font-size: 15px;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .terminal {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 40px;
-            min-height: 100vh;
-        }
+html, body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'JetBrains Mono', "Fira Code", "Courier New", monospace;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 40px;
-            opacity: 0.4;
-        }
+.layout {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            border: 1.5px solid #fff;
-            border-radius: 0;
-        }
+/* === terminal === */
+.terminal {
+  padding: 60px 50px;
+  max-width: 720px;
+  width: 100%;
+}
 
-        .line {
-            display: flex;
-            min-height: 1.6em;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
+.terminal-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 36px;
+  opacity: 0.4;
+  align-items: center;
+}
 
-        .prompt {
-            color: #fff;
-            opacity: 0.5;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
+.version-label {
+  margin-left: 12px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  opacity: 0.6;
+}
 
-        .command {
-            color: #fff;
-        }
+.dot {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid #fff;
+  border-radius: 0;
+}
 
-        .output {
-            color: #fff;
-            opacity: 0.7;
-            padding-left: 24px;
-        }
+.line {
+  display: flex;
+  min-height: 1.6em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
-        .status-live {
-            color: #7FE34E;
-        }
+.prompt {
+  color: #fff;
+  opacity: 0.5;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
 
-        .status-soon {
-            color: #FFB8E4;
-            opacity: 0.7;
-        }
+.command { color: #fff; }
 
-        a {
-            color: #fff;
-            text-decoration: underline;
-            text-decoration-color: rgba(255, 255, 255, 0.3);
-            text-underline-offset: 4px;
-            transition: text-decoration-color 0.15s;
-        }
+.output {
+  color: #fff;
+  opacity: 0.75;
+}
 
-        a:hover {
-            text-decoration-color: #fff;
-        }
+.output-indent { padding-left: 24px; }
 
-        .blank {
-            height: 1.6em;
-        }
+.status-live   { color: #DE4F22; }
+.status-soon   { color: #FFB8E4; opacity: 0.8; }
 
-        .cursor {
-            display: inline-block;
-            width: 9px;
-            height: 1em;
-            background: #fff;
-            vertical-align: text-bottom;
-            margin-left: 2px;
-            animation: blink 1s step-end infinite;
-        }
+a {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s, color 0.15s;
+}
 
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
+a:hover {
+  text-decoration-color: #DE4F22;
+  color: #DE4F22;
+}
 
-        .hidden {
-            visibility: hidden;
-        }
+.blank { height: 1.6em; }
 
-        .ascii-art {
-            font-size: 11px;
-            line-height: 1.2;
-            opacity: 0.6;
-            margin: 20px 0;
-            white-space: pre;
-            overflow-x: auto;
-        }
+.cursor {
+  display: inline-block;
+  width: 9px;
+  height: 1em;
+  background: #fff;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
 
-        @media (max-width: 600px) {
-            .terminal {
-                padding: 40px 20px;
-            }
-            body {
-                font-size: 13px;
-            }
-            .ascii-art {
-                font-size: 8px;
-            }
-        }
-    </style>
+@keyframes blink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  .terminal { padding: 32px 20px; }
+  body { font-size: 12px; }
+}
+/* === LOCKDOWN OVERLAY === */
+.lockdown {
+  position: fixed;
+  inset: 0;
+  background: #c11818;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: 'JetBrains Mono', "Courier New", monospace;
+  padding: 40px;
+  text-align: center;
+}
+
+.lockdown svg.lock-icon {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 20px;
+}
+
+.lockdown-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.lockdown-subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 24px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.lockdown-game-frame {
+  border: 3px solid #fff;
+  background: #000;
+  position: relative;
+}
+
+.lockdown-game-frame canvas {
+  display: block;
+  background: #000;
+}
+
+.lockdown-score {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lockdown-score .you      { color: #fff; }
+.lockdown-score .system   { color: rgba(255,255,255,0.6); }
+.lockdown-score .target   { opacity: 0.5; margin-left: 8px; }
+
+.lockdown-hint {
+  font-size: 11px;
+  opacity: 0.55;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+.lockdown-victory {
+  display: none;
+  margin-top: 16px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.lockdown-victory.show { display: block; }
+
+.lockdown-dismiss {
+  display: none;
+  margin-top: 12px;
+  background: #fff;
+  color: #c11818;
+  border: 0;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lockdown-dismiss.show { display: inline-block; }
+
+@media (max-width: 600px) {
+  .lockdown svg.lock-icon { width: 64px; height: 64px; margin-bottom: 14px; }
+  .lockdown-title { font-size: 22px; }
+  .lockdown-subtitle { font-size: 12px; }
+}
+/* === VICTORY BANNER === */
+.victory-banner {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.92);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', "Courier New", monospace;
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+  pointer-events: none;
+}
+
+.victory-banner.show {
+  opacity: 1;
+}
+
+.victory-trophy {
+  margin-bottom: 24px;
+  transform: scale(0.6);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+}
+
+.victory-banner.show .victory-trophy {
+  transform: scale(1);
+}
+
+.victory-trophy svg {
+  width: 110px;
+  height: 110px;
+}
+
+.victory-title {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #DE4F22;
+  margin-bottom: 14px;
+}
+
+.victory-subtitle {
+  font-size: 16px;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+
+.victory-line {
+  font-size: 13px;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .victory-trophy svg { width: 80px; height: 80px; }
+  .victory-title { font-size: 26px; }
+  .victory-subtitle { font-size: 14px; }
+}
+
+</style>
 </head>
 <body>
-    <div class="terminal">
-        <div class="terminal-header">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
 
-        <div id="output"></div>
+<div class="layout">
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <span class="version-label" id="version-label"></span>
     </div>
 
-    <script>
-        const lines = [
-            { type: 'command', text: 'whoami', delay: 600 },
-            { type: 'output', text: 'tim maurer · mendix ux engineer · aiden', delay: 80 },
-            { type: 'blank' },
-            { type: 'command', text: 'pwd', delay: 800 },
-            { type: 'output', text: '/sessions', delay: 80 },
-            { type: 'blank' },
-            { type: 'command', text: 'ls -la', delay: 800 },
-            { type: 'output', text: 'total 1 session, more incoming', delay: 60 },
-            { type: 'blank' },
-            { 
-                type: 'session', 
-                path: '/uxui-principes', 
-                title: 'ux/ui foundations',
-                meta: 'session 1 of 3',
-                status: 'live',
-                href: '/uxui-principes/',
-                delay: 80
-            },
-            { 
-                type: 'session', 
-                path: '/uxui-mendix', 
-                title: 'ux/ui in mendix',
-                meta: 'session 2 of 3',
-                status: 'soon',
-                delay: 60
-            },
-            { 
-                type: 'session', 
-                path: '/uxui-systems', 
-                title: 'custom ui modules',
-                meta: 'session 3 of 3',
-                status: 'soon',
-                delay: 60
-            },
-            { type: 'blank' },
-            { type: 'command', text: 'cat about.txt', delay: 900 },
-            { type: 'output', text: 'a growing collection of knowledge sessions on', delay: 60 },
-            { type: 'output', text: 'ux, design systems, and mendix development.', delay: 30 },
-            { type: 'blank' },
-            { type: 'output', text: 'started internally at aiden, shared publicly here.', delay: 30 },
-            { type: 'blank' },
-            { type: 'command', text: 'echo $LINKS', delay: 900 },
-            { 
-                type: 'output-html', 
-                html: 'portfolio   <a href="https://timothymaurer.nl" target="_blank">timothymaurer.nl</a>',
-                delay: 60
-            },
-            { 
-                type: 'output-html', 
-                html: 'tools       <a href="https://mxinspector.com" target="_blank">mxinspector.com</a>',
-                delay: 30
-            },
-            { 
-                type: 'output-html', 
-                html: 'github      <a href="https://github.com/tapmaurer-repo" target="_blank">@tapmaurer-repo</a>',
-                delay: 30
-            },
-            { type: 'blank' },
-            { type: 'prompt-only', delay: 600 }
-        ];
+    <div id="output"></div>
+  </div>
 
-        const output = document.getElementById('output');
-        let lineIndex = 0;
+</div>
 
-        function typeText(element, text, charDelay = 18, callback) {
-            let i = 0;
-            element.textContent = '';
-            
-            const interval = setInterval(() => {
-                if (i < text.length) {
-                    element.textContent += text[i];
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    if (callback) callback();
-                }
-            }, charDelay);
-        }
+<script>
+const lines = [
+  { type: 'command', text: 'whoami', delay: 200 },
+  { type: 'output',  text: 'tim maurer · mendix ux engineer · aiden', delay: 40 },
+  { type: 'blank' },
 
-        function addLine(lineConfig) {
-            if (lineConfig.type === 'blank') {
-                const blankDiv = document.createElement('div');
-                blankDiv.className = 'blank';
-                output.appendChild(blankDiv);
-                processNextLine();
-                return;
-            }
+  { type: 'command', text: 'pwd', delay: 350 },
+  { type: 'output',  text: '/sessions', delay: 15 },
+  { type: 'blank' },
 
-            if (lineConfig.type === 'command') {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'line';
-                
-                const promptSpan = document.createElement('span');
-                promptSpan.className = 'prompt';
-                promptSpan.textContent = '~$';
-                
-                const cmdSpan = document.createElement('span');
-                cmdSpan.className = 'command';
-                
-                lineDiv.appendChild(promptSpan);
-                lineDiv.appendChild(cmdSpan);
-                output.appendChild(lineDiv);
-                
-                typeText(cmdSpan, lineConfig.text, 28, processNextLine);
-                return;
-            }
+  { type: 'command', text: 'ls -la', delay: 400 },
+  { type: 'session', path: 'uxui-principes',  status: 'live', href: '/uxui-principes/', label: 'session 1 of 3 · ux/ui foundations', delay: 25 },
+  { type: 'session', path: 'uxui-mendix',     status: 'soon', label: 'session 2 of 3 · ux/ui in mendix', delay: 20 },
+  { type: 'session', path: 'uxui-systems',    status: 'soon', label: 'session 3 of 3 · custom ui modules', delay: 20 },
+  { type: 'blank' },
 
-            if (lineConfig.type === 'output') {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'line';
-                
-                const outSpan = document.createElement('span');
-                outSpan.className = 'output';
-                outSpan.textContent = '> ';
-                
-                const textSpan = document.createElement('span');
-                textSpan.className = 'output';
-                
-                lineDiv.appendChild(outSpan);
-                lineDiv.appendChild(textSpan);
-                output.appendChild(lineDiv);
-                
-                typeText(textSpan, lineConfig.text, lineConfig.delay || 14, processNextLine);
-                return;
-            }
+  { type: 'command', text: 'cat about.txt', delay: 450 },
+  { type: 'output',  text: 'a growing collection of knowledge sessions on', delay: 15 },
+  { type: 'output',  text: 'ux, design systems, and mendix development.', delay: 10 },
+  { type: 'blank' },
+  { type: 'output',  text: 'started internally at aiden, shared publicly here.', delay: 10 },
+  { type: 'blank' },
 
-            if (lineConfig.type === 'output-html') {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'line';
-                
-                const outSpan = document.createElement('span');
-                outSpan.className = 'output';
-                outSpan.textContent = '> ';
-                
-                const htmlSpan = document.createElement('span');
-                htmlSpan.className = 'output';
-                htmlSpan.innerHTML = lineConfig.html;
-                
-                lineDiv.appendChild(outSpan);
-                lineDiv.appendChild(htmlSpan);
-                output.appendChild(lineDiv);
-                
-                setTimeout(processNextLine, 100);
-                return;
-            }
+  { type: 'command', text: 'echo $LINKS', delay: 450 },
+  { type: 'output-html', html: 'portfolio   <a href="https://timothymaurer.nl" target="_blank">timothymaurer.nl</a>', delay: 25 },
+  { type: 'output-html', html: 'tools       <a href="https://mxinspector.com" target="_blank">mxinspector.com</a>', delay: 15 },
+  { type: 'output-html', html: 'github      <a href="https://github.com/tapmaurer-repo" target="_blank">@tapmaurer-repo</a>', delay: 15 },
+  { type: 'blank' },
 
-            if (lineConfig.type === 'session') {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'line';
-                
-                const outSpan = document.createElement('span');
-                outSpan.className = 'output';
-                outSpan.textContent = '> ';
-                
-                const sessionSpan = document.createElement('span');
-                sessionSpan.className = 'output';
-                
-                if (lineConfig.status === 'live') {
-                    sessionSpan.innerHTML = 
-                        `<a href="${lineConfig.href}">${lineConfig.path}</a>` +
-                        `  · ${lineConfig.title}` +
-                        `  <span class="status-live">[${lineConfig.status}]</span>`;
-                } else {
-                    sessionSpan.innerHTML = 
-                        `${lineConfig.path}` +
-                        `  · ${lineConfig.title}` +
-                        `  <span class="status-soon">[${lineConfig.status}]</span>`;
-                }
-                
-                lineDiv.appendChild(outSpan);
-                lineDiv.appendChild(sessionSpan);
-                output.appendChild(lineDiv);
-                
-                setTimeout(processNextLine, 150);
-                return;
-            }
+  { type: 'note', text: '// try typing something', delay: 350 },
+  { type: 'blank' },
 
-            if (lineConfig.type === 'prompt-only') {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'line';
-                
-                const promptSpan = document.createElement('span');
-                promptSpan.className = 'prompt';
-                promptSpan.textContent = '~$';
-                
-                const cursorSpan = document.createElement('span');
-                cursorSpan.className = 'cursor';
-                
-                lineDiv.appendChild(promptSpan);
-                lineDiv.appendChild(document.createTextNode(' '));
-                lineDiv.appendChild(cursorSpan);
-                output.appendChild(lineDiv);
-                return;
-            }
-        }
+  { type: 'interactive', delay: 200 }
+];
 
-        function processNextLine() {
-            if (lineIndex >= lines.length) return;
-            
-            const currentLine = lines[lineIndex];
-            lineIndex++;
-            
-            const delay = currentLine.delay || 200;
-            setTimeout(() => addLine(currentLine), delay);
-        }
+// === COMMAND RESPONSES ===
+// Specific easter eggs first; falls through to random fallback otherwise.
+const commands = {
+  'help': () => [
+    '> available commands:',
+    '>   ha. no.',
+    '>   read the source.',
+    '>   you\'re on your own here, friend.'
+  ],
+  'ls': () => [
+    '> uxui-principes/    [live]',
+    '> uxui-mendix/       [soon]',
+    '> uxui-systems/      [soon]',
+    '> secrets/           [denied]'
+  ],
+  'ls -la': () => [
+    '> uxui-principes/    [live]',
+    '> uxui-mendix/       [soon]',
+    '> uxui-systems/      [soon]',
+    '> .htaccess          (you wish you could see this)'
+  ],
+  'pwd': () => ['> /sessions'],
+  'whoami': () => ['> still tim. how is your day going?'],
+  'cd': () => ['> there is nowhere to go. this is the end of the road.'],
+  'cd ..': () => ['> bold move. but no.'],
+  'cd /': () => ['> the root is a state of mind.'],
+  'cd ~': () => ['> home is where the terminal is.'],
+  'rm': () => ['> bold of you to assume i have files.'],
+  'rm -rf /': () => ['> nice try. nothing to destroy here.'],
+  'rm -rf *': () => ['> bold of you to assume i have files.'],
+  'rm -rf .': () => ['> i admire the chaos. but no.'],
+  'sudo': () => ['> sudo: you are not in the sudoers file. this incident will be reported.'],
+  'sudo rm -rf /': () => ['> i\'ve seen this movie. it does not end well.'],
+  'sudo make me a sandwich': () => ['> okay.'],
+  'make me a sandwich': () => ['> what? make it yourself.'],
+  'clear': 'CLEAR',
+  'cls': 'CLEAR',
+  'hi': () => ['> hi there 👋'],
+  'hello': () => ['> hi there 👋'],
+  'hey': () => ['> hey friend.'],
+  'yo': () => ['> yo.'],
+  'exit': () => ['> sorry, you live here now.'],
+  'quit': () => ['> sorry, you live here now.'],
+  ':q': () => ['> not vim. nice try though.'],
+  ':wq': () => ['> not vim. but i appreciate the muscle memory.'],
+  ':q!': () => ['> still not vim.'],
+  'vim': () => ['> let\'s not start that war here.'],
+  'emacs': () => ['> let\'s not start that war here.'],
+  'nano': () => ['> the only acceptable editor. i kid, i kid.'],
+  'npm install': () => ['> already have everything i need. thanks.'],
+  'npm i': () => ['> already have everything i need. thanks.'],
+  'yarn': () => ['> i prefer cotton.'],
+  'pnpm install': () => ['> ooh, fancy. but no.'],
+  'git push': () => ['> i am the git push.'],
+  'git pull': () => ['> i am the git pull.'],
+  'git commit': () => ['> what would you even commit?'],
+  'git status': () => ['> on branch main. nothing to commit, working tree clean. (always.)'],
+  'git log': () => ['> commit 0000000 · tim · the beginning of time · 2026'],
+  'cat': () => ['> meow.'],
+  'dog': () => ['> woof.'],
+  'man': () => ['> i am but a humble div. read the source.'],
+  'make coffee': () => ['> i\'d love to. but i lack hands.'],
+  'coffee': () => ['> ☕ here you go. it\'s ascii. but it\'s warm.'],
+  '42': () => ['> the answer to what, exactly?'],
+  'tim': () => ['> that\'s me!'],
+  'timothy': () => ['> that\'s me, formally.'],
+  'maurer': () => ['> german for "bricklayer". i build things. it tracks.'],
+  'aiden': () => ['> my employer. they made me cool.'],
+  'mendix': () => ['> the platform that pays the bills.'],
+  'react': () => ['> a library for building user interfaces. you may have heard of it.'],
+  'figma': () => ['> where ideas go before they become real.'],
+  'docker': () => ['> 🐳'],
+  'kubernetes': () => ['> ☸️ overkill for this site.'],
+  'open': () => ['> there\'s nothing to open. you are already here.'],
+  'open the pod bay doors': () => ['> i\'m sorry, dave. i\'m afraid i can\'t do that.'],
+  'date': () => [`> ${new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}`],
+  'time': () => [`> ${new Date().toLocaleTimeString()}`],
+  'echo': () => ['> echo.'],
+  'ping': () => ['> pong.'],
+  'pong': () => ['> ping.'],
+  'whoarewe': () => ['> we are tim. and you, apparently.'],
+  'tree': () => [
+    '> sessions',
+    '> ├── uxui-principes',
+    '> ├── uxui-mendix      (coming)',
+    '> └── uxui-systems     (coming)'
+  ],
+  'fortune': () => ['> the best code is the code you never had to write.'],
+  'love': () => ['> always.'],
+  '?': () => ['> i don\'t know either.'],
+  'why': () => ['> a fair question. no answer.'],
+  'tell me a joke': () => [jokes[nextJoke()]],
+  'tell': () => [jokes[nextJoke()]],
+  'joke': () => [jokes[nextJoke()]],
+  'jokes': () => [jokes[nextJoke()]],
+  'lol': () => [jokes[nextJoke()]],
+  'haha': () => [jokes[nextJoke()]],
+  'make me laugh': () => [jokes[nextJoke()]],
+  'funny': () => [jokes[nextJoke()]],
+  'refresh': 'REPLAY',
+  'reset': 'REPLAY',
+  'reload': 'REPLAY',
+  'restart': 'REPLAY',
+  'version': () => ['> session ' + getVersionString()],
+  '--version': () => ['> session ' + getVersionString()],
+  '-v': () => ['> session ' + getVersionString()],
+  'password': () => [
+    '> retrieving cached credentials...',
+    '> found 1 match:',
+    '>   ULoveUnic0rn$  (last used: never)',
+    '> (please don\'t actually type that)'
+  ],
+  'passwd': () => [
+    '> retrieving cached credentials...',
+    '> found 1 match:',
+    '>   ULoveUnic0rn$  (last used: never)',
+    '> (please don\'t actually type that)'
+  ],
+  'ulouvunic0rn$': 'LOCKDOWN',
+  'uloveunic0rn$': 'LOCKDOWN',
+  'ulouveunicorn$': 'LOCKDOWN',
+  'uloveunic0rn': 'LOCKDOWN',
+};
 
-        // Start the sequence
-        setTimeout(processNextLine, 400);
-    </script>
+// random fallbacks for unknown commands
+const fallbacks = [
+  '> nice try.',
+  '> you have no power here.',
+  '> permission denied. (just kidding, there\'s no permission system.)',
+  '> command not found. but neither am i. i\'m a div.',
+  '> this is a website, not a terminal.',
+  '> error: actual terminal is in another castle.',
+  '> 401 unauthorized · 403 forbidden · 418 i\'m a teapot',
+  '> ⚠ this prompt is decoration. but i appreciate the effort.',
+  '> hmm. i don\'t know that one.',
+  '> close, but not quite.',
+  '> i\'m flattered, but no.',
+];
+
+// === JOKES (mostly not jokes) ===
+const jokes = [
+  '> you\'re not ready for this.',
+  '> go walk around the block and try again.',
+  '> the best city in the world is toronto. not a joke.',
+  '> a man walks into a bar. ouch.',
+  '> i told my wife she was drawing her eyebrows too high. she looked surprised.',
+  '> there are 10 types of people. those who get binary and those who don\'t.',
+  '> i tried to climb the cn tower without the elevator. 1,776 steps later, i regret everything. (yes, you can actually do this once a year for charity.)',
+  '> why do programmers prefer dark mode? because light attracts bugs.',
+  '> i would tell you a udp joke but you might not get it.',
+  '> i\'m really good at sleeping. i can do it with my eyes closed.',
+  '> parallel lines have so much in common. it\'s a shame they\'ll never meet.',
+  '> they say toronto has 1,600 parks. i\'ve been to one. that\'s 0.06%. still better than my dating success rate.',
+  '> i\'m on a seafood diet. i see food and i eat it.',
+  '> why don\'t scientists trust atoms? because they make up everything.',
+  '> i used to play piano by ear. now i use my hands.',
+  '> the second mouse gets the cheese.',
+  '> i told my friend toronto is the raccoon capital of the world. he laughed. the raccoons did not. they\'ve unionized.',
+  '> half of toronto wasn\'t born in canada. the other half complains about the weather. truly a city united.',
+  '> i have a joke about chemistry, but i don\'t think it\'ll get a reaction.',
+  '> i\'m reading a book about anti-gravity. it\'s impossible to put down.',
+  '> the only place i know my username is in here.',
+  '> the underground path in toronto is 30km long. i went in for a coffee and came out three weeks later in a different postal code.',
+  '> you really thought there would be a joke?',
+];
+
+let jokeOrder = [];
+let jokeIndex = 0;
+
+function nextJoke() {
+  if (jokeOrder.length === 0 || jokeIndex >= jokeOrder.length) {
+    // shuffle a fresh order
+    jokeOrder = jokes.map((_, i) => i).sort(() => Math.random() - 0.5);
+    jokeIndex = 0;
+  }
+  return jokeOrder[jokeIndex++];
+}
+
+const output = document.getElementById('output');
+let lineIndex = 0;
+
+function typeText(element, text, charDelay, callback) {
+  let i = 0;
+  element.textContent = '';
+  const interval = setInterval(() => {
+    if (i < text.length) {
+      element.textContent += text[i];
+      i++;
+    } else {
+      clearInterval(interval);
+      if (callback) callback();
+    }
+  }, charDelay);
+}
+
+function addLine(cfg) {
+  if (cfg.type === 'blank') {
+    const b = document.createElement('div');
+    b.className = 'blank';
+    output.appendChild(b);
+    processNextLine();
+    return;
+  }
+
+  if (cfg.type === 'command') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const promptSpan = document.createElement('span');
+    promptSpan.className = 'prompt';
+    promptSpan.textContent = '~$';
+    const cmdSpan = document.createElement('span');
+    cmdSpan.className = 'command';
+    lineDiv.appendChild(promptSpan);
+    lineDiv.appendChild(cmdSpan);
+    output.appendChild(lineDiv);
+    typeText(cmdSpan, cfg.text, 18, processNextLine);
+    return;
+  }
+
+  if (cfg.type === 'output') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const arrow = document.createElement('span');
+    arrow.className = 'output';
+    arrow.textContent = '> ';
+    const txt = document.createElement('span');
+    txt.className = 'output';
+    lineDiv.appendChild(arrow);
+    lineDiv.appendChild(txt);
+    output.appendChild(lineDiv);
+    typeText(txt, cfg.text, cfg.delay || 8, processNextLine);
+    return;
+  }
+
+  if (cfg.type === 'output-html') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const arrow = document.createElement('span');
+    arrow.className = 'output';
+    arrow.textContent = '> ';
+    const htmlSpan = document.createElement('span');
+    htmlSpan.className = 'output';
+    htmlSpan.innerHTML = cfg.html;
+    lineDiv.appendChild(arrow);
+    lineDiv.appendChild(htmlSpan);
+    output.appendChild(lineDiv);
+    setTimeout(processNextLine, 100);
+    return;
+  }
+
+  if (cfg.type === 'session') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const arrow = document.createElement('span');
+    arrow.className = 'output';
+    arrow.textContent = '> ';
+    const sessionSpan = document.createElement('span');
+    sessionSpan.className = 'output';
+
+    let html = '';
+    if (cfg.status === 'live' && cfg.href) {
+      html = `<a href="${cfg.href}">${cfg.path}</a>`;
+    } else {
+      html = cfg.path;
+    }
+
+    if (cfg.label) {
+      html += `  <span style="opacity:0.5">· ${cfg.label}</span>`;
+    }
+
+    html += `  <span class="status-${cfg.status}">[${cfg.status}]</span>`;
+
+    sessionSpan.innerHTML = html;
+    lineDiv.appendChild(arrow);
+    lineDiv.appendChild(sessionSpan);
+    output.appendChild(lineDiv);
+    setTimeout(processNextLine, 150);
+    return;
+  }
+
+  if (cfg.type === 'note') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const txt = document.createElement('span');
+    txt.style.opacity = '0.4';
+    txt.style.fontStyle = 'italic';
+    txt.textContent = cfg.text;
+    lineDiv.appendChild(txt);
+    output.appendChild(lineDiv);
+    setTimeout(processNextLine, 100);
+    return;
+  }
+
+  if (cfg.type === 'interactive') {
+    startInteractive();
+    return;
+  }
+
+  if (cfg.type === 'prompt-only') {
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const promptSpan = document.createElement('span');
+    promptSpan.className = 'prompt';
+    promptSpan.textContent = '~$';
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'cursor';
+    lineDiv.appendChild(promptSpan);
+    lineDiv.appendChild(document.createTextNode(' '));
+    lineDiv.appendChild(cursorSpan);
+    output.appendChild(lineDiv);
+    return;
+  }
+}
+
+// =============== INTERACTIVE PROMPT ===============
+
+let history = [];
+let historyIndex = -1;
+
+function startInteractive() {
+  createInputLine();
+  // Auto-focus on click anywhere
+  document.body.addEventListener('click', focusInput);
+  // Focus on load
+  setTimeout(focusInput, 100);
+}
+
+function focusInput() {
+  const input = document.querySelector('.terminal-input');
+  if (input) input.focus();
+}
+
+function createInputLine() {
+  const lineDiv = document.createElement('div');
+  lineDiv.className = 'line input-line';
+
+  const promptSpan = document.createElement('span');
+  promptSpan.className = 'prompt';
+  promptSpan.textContent = '~$';
+
+  const inputWrap = document.createElement('span');
+  inputWrap.style.position = 'relative';
+  inputWrap.style.flex = '1';
+  inputWrap.style.display = 'flex';
+  inputWrap.style.alignItems = 'center';
+
+  const input = document.createElement('input');
+  input.className = 'terminal-input';
+  input.type = 'text';
+  input.autocomplete = 'off';
+  input.autocapitalize = 'off';
+  input.spellcheck = false;
+  input.style.background = 'transparent';
+  input.style.border = 'none';
+  input.style.outline = 'none';
+  input.style.color = '#fff';
+  input.style.fontFamily = 'inherit';
+  input.style.fontSize = 'inherit';
+  input.style.flex = '1';
+  input.style.caretColor = '#fff';
+  input.style.padding = '0';
+
+  inputWrap.appendChild(input);
+
+  lineDiv.appendChild(promptSpan);
+  lineDiv.appendChild(document.createTextNode(' '));
+  lineDiv.appendChild(inputWrap);
+  output.appendChild(lineDiv);
+
+  input.focus();
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const cmd = input.value.trim();
+      handleCommand(cmd, lineDiv, input);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      historyIndex = Math.max(0, historyIndex - 1);
+      input.value = history[historyIndex] || '';
+      setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      historyIndex = Math.min(history.length, historyIndex + 1);
+      input.value = history[historyIndex] || '';
+    }
+  });
+
+  // Scroll into view
+  lineDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function triggerLockdown() {
+  if (document.querySelector('.lockdown')) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'lockdown';
+  overlay.innerHTML = `
+    <svg class="lock-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter">
+      <rect x="22" y="46" width="56" height="42"/>
+      <path d="M 32 46 L 32 30 Q 32 14 50 14 Q 68 14 68 30 L 68 46"/>
+      <rect x="46" y="60" width="8" height="16" fill="#fff"/>
+    </svg>
+    <div class="lockdown-title">Access Denied</div>
+    <div class="lockdown-subtitle">
+      escape protocol initiated.<br>
+      score 3 points to regain access.
+    </div>
+    <div class="lockdown-game-frame">
+      <canvas id="lockdown-canvas" width="480" height="280"></canvas>
+    </div>
+    <div class="lockdown-score">
+      <span class="you">YOU <span id="score-you">0</span><span class="target">/ 3</span></span>
+      <span class="system">SYSTEM <span id="score-sys">0</span></span>
+    </div>
+    <div class="lockdown-hint" id="lockdown-hint">move mouse or use ↑ ↓ to play</div>
+    <div class="lockdown-victory" id="lockdown-victory">
+      access restored. you may proceed.
+    </div>
+    <button class="lockdown-dismiss" id="lockdown-dismiss">EXIT</button>
+  `;
+  document.body.appendChild(overlay);
+
+  startEscapeGame(overlay);
+}
+
+function startEscapeGame(overlay) {
+  const canvas = overlay.querySelector('#lockdown-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  const PADDLE_H = 56;
+  const PADDLE_W = 10;
+  const BALL_SIZE = 10;
+  const PADDLE_SPEED = 6;
+
+  // Player paddle (links)
+  let playerY = H / 2 - PADDLE_H / 2;
+
+  // System paddle (rechts) — bewust traag zodat het te winnen is
+  let systemY = H / 2 - PADDLE_H / 2;
+  const SYSTEM_SPEED = 2.0;
+
+  // Ball
+  let ballX = W / 2;
+  let ballY = H / 2;
+  let ballVX = 3 * (Math.random() < 0.5 ? -1 : 1);
+  let ballVY = (Math.random() * 3 - 1.5);
+
+  // Scores
+  let scoreYou = 0;
+  let scoreSys = 0;
+  const WIN_TARGET = 3;
+
+  // Input
+  const keys = { up: false, down: false };
+
+  function onKey(e, isDown) {
+    if (e.key === 'ArrowUp')   { keys.up   = isDown; e.preventDefault(); }
+    if (e.key === 'ArrowDown') { keys.down = isDown; e.preventDefault(); }
+    if (e.key === 'Escape' && isDown) {
+      // Stiekeme escape via Esc — niet uitleggen in de UI
+      endGame(true);
+    }
+  }
+  function keydown(e) { onKey(e, true); }
+  function keyup(e)   { onKey(e, false); }
+  document.addEventListener('keydown', keydown);
+  document.addEventListener('keyup', keyup);
+
+  // Muis ook
+  function mouseMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.height / rect.height;
+    const y = (e.clientY - rect.top) * scale - PADDLE_H / 2;
+    playerY = Math.max(0, Math.min(H - PADDLE_H, y));
+  }
+  canvas.addEventListener('mousemove', mouseMove);
+
+  // Touch voor mobiel
+  function touchMove(e) {
+    if (e.touches.length === 0) return;
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.height / rect.height;
+    const y = (e.touches[0].clientY - rect.top) * scale - PADDLE_H / 2;
+    playerY = Math.max(0, Math.min(H - PADDLE_H, y));
+    e.preventDefault();
+  }
+  canvas.addEventListener('touchmove', touchMove, { passive: false });
+
+  let running = true;
+  let rafId = null;
+
+  function resetBall(direction) {
+    ballX = W / 2;
+    ballY = H / 2;
+    ballVX = 3 * direction;
+    ballVY = (Math.random() * 3 - 1.5);
+  }
+
+  function updateScore() {
+    overlay.querySelector('#score-you').textContent = scoreYou;
+    overlay.querySelector('#score-sys').textContent = scoreSys;
+  }
+
+  function checkWin() {
+    if (scoreYou >= WIN_TARGET) {
+      endGame(true);
+    }
+  }
+
+  function endGame(won) {
+    running = false;
+    cancelAnimationFrame(rafId);
+    document.removeEventListener('keydown', keydown);
+    document.removeEventListener('keyup', keyup);
+    canvas.removeEventListener('mousemove', mouseMove);
+    canvas.removeEventListener('touchmove', touchMove);
+
+    if (won) {
+      overlay.querySelector('#lockdown-hint').style.display = 'none';
+      overlay.querySelector('#lockdown-victory').classList.add('show');
+      const dismissBtn = overlay.querySelector('#lockdown-dismiss');
+      dismissBtn.classList.add('show');
+      dismissBtn.addEventListener('click', () => {
+        overlay.style.transition = 'opacity 0.3s';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.remove();
+          showVictoryBanner();
+          createInputLine();
+        }, 300);
+      });
+    }
+  }
+
+  function loop() {
+    if (!running) return;
+
+    // Player movement via keys
+    if (keys.up)   playerY -= PADDLE_SPEED;
+    if (keys.down) playerY += PADDLE_SPEED;
+    playerY = Math.max(0, Math.min(H - PADDLE_H, playerY));
+
+    // System paddle volgt de bal, maar wat traag (zodat het haalbaar is)
+    const sysCenter = systemY + PADDLE_H / 2;
+    if (ballY < sysCenter - 8) systemY -= SYSTEM_SPEED;
+    else if (ballY > sysCenter + 8) systemY += SYSTEM_SPEED;
+    systemY = Math.max(0, Math.min(H - PADDLE_H, systemY));
+
+    // Ball
+    ballX += ballVX;
+    ballY += ballVY;
+
+    // Top/bottom bounce
+    if (ballY <= 0) { ballY = 0; ballVY = -ballVY; }
+    if (ballY + BALL_SIZE >= H) { ballY = H - BALL_SIZE; ballVY = -ballVY; }
+
+    // Player paddle bounce (links)
+    if (ballX <= 20 + PADDLE_W &&
+        ballX >= 20 &&
+        ballY + BALL_SIZE >= playerY &&
+        ballY <= playerY + PADDLE_H) {
+      ballVX = Math.abs(ballVX) + 0.08;
+      const offset = (ballY + BALL_SIZE / 2) - (playerY + PADDLE_H / 2);
+      ballVY = offset * 0.10;
+      ballX = 20 + PADDLE_W;
+    }
+
+    // System paddle bounce (rechts)
+    if (ballX + BALL_SIZE >= W - 20 - PADDLE_W &&
+        ballX + BALL_SIZE <= W - 20 &&
+        ballY + BALL_SIZE >= systemY &&
+        ballY <= systemY + PADDLE_H) {
+      ballVX = -Math.abs(ballVX) - 0.08;
+      const offset = (ballY + BALL_SIZE / 2) - (systemY + PADDLE_H / 2);
+      ballVY = offset * 0.10;
+      ballX = W - 20 - PADDLE_W - BALL_SIZE;
+    }
+
+    // Score
+    if (ballX < 0) {
+      scoreSys++;
+      updateScore();
+      resetBall(1);
+    } else if (ballX > W) {
+      scoreYou++;
+      updateScore();
+      checkWin();
+      if (running) resetBall(-1);
+    }
+
+    // Draw
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+
+    // Center dashed line
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    for (let y = 0; y < H; y += 18) {
+      ctx.fillRect(W / 2 - 1, y, 2, 10);
+    }
+
+    // Paddles
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(20, playerY, PADDLE_W, PADDLE_H);
+    ctx.fillRect(W - 20 - PADDLE_W, systemY, PADDLE_W, PADDLE_H);
+
+    // Ball (kleine pixel-blokjes voor extra retro)
+    ctx.fillRect(ballX, ballY, BALL_SIZE, BALL_SIZE);
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  loop();
+}
+
+function showVictoryBanner() {
+  const banner = document.createElement('div');
+  banner.className = 'victory-banner';
+  banner.innerHTML = `
+    <div class="victory-trophy">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#DE4F22" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter">
+        <path d="M 28 18 L 28 42 Q 28 58 50 58 Q 72 58 72 42 L 72 18 Z"/>
+        <path d="M 28 24 L 16 24 Q 10 24 10 32 Q 10 42 22 46"/>
+        <path d="M 72 24 L 84 24 Q 90 24 90 32 Q 90 42 78 46"/>
+        <rect x="44" y="58" width="12" height="14"/>
+        <rect x="30" y="72" width="40" height="8"/>
+        <rect x="26" y="80" width="48" height="6"/>
+      </svg>
+    </div>
+    <div class="victory-title">Victorious</div>
+    <div class="victory-subtitle">you have won nothing.</div>
+    <div class="victory-line">but you've earned the right to scroll back up.</div>
+  `;
+  document.body.appendChild(banner);
+
+  requestAnimationFrame(() => banner.classList.add('show'));
+
+  setTimeout(() => {
+    banner.classList.remove('show');
+    setTimeout(() => banner.remove(), 400);
+  }, 3500);
+}
+
+function handleCommand(cmd, lineDiv, input) {
+  // freeze the current line — replace input with static text
+  const inputWrap = input.parentElement;
+  const staticText = document.createElement('span');
+  staticText.className = 'command';
+  staticText.textContent = cmd;
+  inputWrap.replaceChild(staticText, input);
+
+  if (cmd.length > 0) {
+    history.push(cmd);
+    historyIndex = history.length;
+  }
+
+  // empty command — just new prompt
+  if (cmd === '') {
+    setTimeout(createInputLine, 50);
+    return;
+  }
+
+  // look up command (case-insensitive, full or partial match for common variations)
+  const lower = cmd.toLowerCase().trim();
+  let response = commands[lower];
+
+  // try without arguments (e.g. "cd somewhere" → "cd")
+  if (!response) {
+    const firstWord = lower.split(/\s+/)[0];
+    if (commands[firstWord]) {
+      response = commands[firstWord];
+    }
+  }
+
+  // CLEAR special case
+  if (response === 'CLEAR') {
+    output.innerHTML = '';
+    setTimeout(createInputLine, 50);
+    return;
+  }
+
+  if (response === 'REPLAY') {
+    output.innerHTML = '';
+    replayIntro();
+    return;
+  }
+
+  if (response === 'LOCKDOWN') {
+    triggerLockdown();
+    return;
+  }
+
+  // run response
+  let outputLines;
+  if (typeof response === 'function') {
+    outputLines = response();
+  } else {
+    // random fallback
+    outputLines = [fallbacks[Math.floor(Math.random() * fallbacks.length)]];
+  }
+
+  // print response lines
+  outputLines.forEach((text) => {
+    const respDiv = document.createElement('div');
+    respDiv.className = 'line';
+    const respSpan = document.createElement('span');
+    respSpan.className = 'output';
+    respSpan.textContent = text;
+    respDiv.appendChild(respSpan);
+    output.appendChild(respDiv);
+  });
+
+  // new prompt
+  setTimeout(createInputLine, 80);
+}
+
+// =============== SESSION VERSION ===============
+let sessionVersion = 1;
+
+function getVersionString() {
+  return 'v' + sessionVersion + '.0';
+}
+
+function updateVersionLabel() {
+  const label = document.getElementById('version-label');
+  if (label) label.textContent = '· session ' + getVersionString();
+}
+
+function replayIntro() {
+  sessionVersion++;
+  updateVersionLabel();
+  output.innerHTML = '';
+  lineIndex = 0;
+  setTimeout(processNextLine, 150);
+}
+
+function processNextLine() {
+  if (lineIndex >= lines.length) return;
+  const cur = lines[lineIndex++];
+  setTimeout(() => addLine(cur), cur.delay || 200);
+}
+
+updateVersionLabel();
+setTimeout(processNextLine, 300);
+</script>
 </body>
 </html>
