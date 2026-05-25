@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>sessions — tim maurer</title>
 <meta name="description" content="Knowledge sessions and presentations by Tim Maurer — UX, UI, design systems, and Mendix development.">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -376,6 +380,8 @@ const commands = {
   'make me a sandwich': () => ['> what? make it yourself.'],
   'clear': 'CLEAR',
   'cls': 'CLEAR',
+  'delete': 'CLEAR',
+  'remove': 'CLEAR',
   'hi': () => ['> hi there 👋'],
   'hello': () => ['> hi there 👋'],
   'hey': () => ['> hey friend.'],
@@ -664,6 +670,79 @@ function startInteractive() {
   document.body.addEventListener('click', focusInput);
   // Focus on load
   setTimeout(focusInput, 100);
+  startIdleSystem();
+}
+
+// =============== IDLE MESSAGES ===============
+const idleMessages = [
+  '> wow you\'re really taking your time.',
+  '> ctrl + + makes things bigger, by the way.',
+  '> we miss you.',
+  '> still there? blink twice if yes.',
+  '> i\'ll wait. i have nothing else to do.',
+  '> the cursor is also tired of blinking.',
+  '> typing tip: just press any key.',
+  '> meanwhile, in toronto, a raccoon just opened a green bin.',
+  '> psst. type \'joke\' for a laugh. or don\'t. i\'m not your boss.',
+  '> i\'m starting to wonder if you went for coffee.',
+  '> ☕',
+  '> hello? echo? echo?',
+  '> you can also type \'refresh\' to start over.',
+  '> the prompt is patient. but i am not.',
+  '> if you\'re reading this you\'re inactive. that\'s the joke.',
+];
+
+let idleOrder = [];
+let idleIdx = 0;
+let idleTimer = null;
+const IDLE_TIMEOUT = 30000; // 30 seconds
+
+function nextIdleMessage() {
+  if (idleOrder.length === 0 || idleIdx >= idleOrder.length) {
+    idleOrder = idleMessages.map((_, i) => i).sort(() => Math.random() - 0.5);
+    idleIdx = 0;
+  }
+  return idleMessages[idleOrder[idleIdx++]];
+}
+
+function resetIdleTimer() {
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(showIdleMessage, IDLE_TIMEOUT);
+}
+
+function showIdleMessage() {
+  const input = document.querySelector('.terminal-input');
+  if (!input) {
+    resetIdleTimer();
+    return;
+  }
+
+  const inputLine = input.closest('.line');
+  if (!inputLine) {
+    resetIdleTimer();
+    return;
+  }
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'line idle-msg';
+  const txt = document.createElement('span');
+  txt.className = 'output';
+  txt.style.opacity = '0.45';
+  txt.style.fontStyle = 'italic';
+  txt.textContent = nextIdleMessage();
+  msgDiv.appendChild(txt);
+
+  inputLine.parentNode.insertBefore(msgDiv, inputLine);
+  inputLine.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+  resetIdleTimer();
+}
+
+function startIdleSystem() {
+  resetIdleTimer();
+  document.addEventListener('keydown', resetIdleTimer);
+  document.addEventListener('mousemove', resetIdleTimer);
+  document.addEventListener('click', resetIdleTimer);
 }
 
 function focusInput() {
